@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 1: Ridiculous Tariffs — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#1a3a5c;--blue-mid:#2e5f8a;--blue-light:#c8ddf0;--gold:#b8952a;--cream:#faf8f4;--mist:#f0f4f8;--text-muted:#6b7280;--danger:#c0392b;--success:#1b6e2e}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--blue)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(26,58,92,0.12)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--blue);text-decoration:none}
+.nav-back{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.nav-back:hover{color:var(--blue)}
+
+.hero{min-height:50vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(155deg,#071523 0%,#0d2640 50%,#1a4a72 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:12rem;font-weight:300;color:rgba(255,255,255,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(200,221,240,0.5);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#fff;line-height:1.1;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:#c8ddf0}
+.hero-meta{display:flex;gap:2rem;flex-wrap:wrap}
+.meta-item{font-size:0.78rem;color:rgba(200,221,240,0.55)}
+.meta-item strong{color:rgba(200,221,240,0.85);display:block;margin-bottom:0.15rem;font-weight:500}
+
+main{max-width:900px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(26,58,92,0.12)}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--blue-light)}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--blue)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--blue);font-weight:500}
+
+/* TARIFF TABS */
+.tariff-tabs{display:flex;gap:0.5rem;margin-bottom:2rem}
+.tab-btn{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.2rem;border-radius:100px;border:0.5px solid rgba(26,58,92,0.2);background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tariff-panel{display:none}
+.tariff-panel.active{display:block}
+
+/* VERDICT CARDS */
+.verdict-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0}
+.verdict-card{background:#fff;border:0.5px solid rgba(26,58,92,0.1);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden}
+.verdict-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.verdict-card.why::before{background:linear-gradient(90deg,#b8952a,#e0c060)}
+.verdict-card.effect::before{background:linear-gradient(90deg,#c0392b,#e74c3c)}
+.verdict-card.result::before{background:linear-gradient(90deg,#1b6e2e,#27ae60)}
+.verdict-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem}
+.verdict-card p{font-size:0.82rem;margin:0;line-height:1.6;color:var(--blue)}
+
+/* CHART */
+.chart-box{background:#fff;border:0.5px solid rgba(26,58,92,0.1);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.chart-title{font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+.chart-wrap{position:relative;height:240px}
+
+/* INTERACTIVE TARIFF CALCULATOR */
+.calc-box{background:#fff;border:0.5px solid rgba(26,58,92,0.1);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.calc-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--blue);margin-bottom:0.5rem}
+.calc-box .desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem}
+.slider-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.slider-group label{font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.5rem}
+.slider-group input[type=range]{width:100%;margin-bottom:0.3rem}
+.slider-val{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--blue);font-weight:300}
+.result-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:0.5px solid rgba(26,58,92,0.08);padding-top:1.25rem}
+.result-item{text-align:center}
+.result-item .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--blue)}
+.result-item .lbl{font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem}
+.result-item.bad .val{color:var(--danger)}
+.result-item.good .val{color:var(--success)}
+
+/* OIL PROGRESSIVE TABLE */
+.oil-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.83rem}
+.oil-table th{text-align:left;padding:0.7rem 1rem;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);border-bottom:0.5px solid rgba(26,58,92,0.12);font-weight:400}
+.oil-table td{padding:0.7rem 1rem;border-bottom:0.5px solid rgba(26,58,92,0.06);color:var(--blue)}
+.oil-table tr.active-row td{background:rgba(184,149,42,0.08);font-weight:500}
+.oil-table .rate-cell{font-weight:500;color:var(--danger)}
+
+/* PARADOX BOX */
+.paradox{background:linear-gradient(135deg,#071523,#0d2640);border-radius:14px;padding:2rem;margin:2rem 0;color:#fff}
+.paradox .label{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,221,240,0.5);margin-bottom:0.75rem}
+.paradox h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;margin-bottom:1rem;line-height:1.2}
+.paradox p{color:rgba(200,221,240,0.7);font-size:0.85rem;margin:0}
+
+/* REFLECTION */
+.learn-box{border:0.5px solid rgba(26,58,92,0.12);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:140px 1fr;border-bottom:0.5px solid rgba(26,58,92,0.08)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(26,58,92,0.04);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-mid);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+/* PAGINATION */
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(26,58,92,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:0.5rem;transition:color 0.2s}
+.page-nav a:hover{color:var(--blue)}
+
+@media(max-width:620px){.slider-row,.result-row,.verdict-row{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← International Trade</a>
+  <a href="../index.html" class="nav-back">Home</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-num">01</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">International Trade · Project 01</div>
+    <h1>Ridiculous Tariffs:<br><em>Kazakhstan's Paradox</em></h1>
+    <div class="hero-meta">
+      <div class="meta-item"><strong>Group</strong>Zhaniya &amp; Diana</div>
+      <div class="meta-item"><strong>IDs</strong>2417691 / 2417678</div>
+      <div class="meta-item"><strong>Focus</strong>US 50% Copper + Oil Export Duty</div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2>Project Overview</h2></div>
+    <p>This project examines two tariffs connected to Kazakhstan: the <strong>US 50% tariff on copper imports</strong> and Kazakhstan's own <strong>Progressive Export Customs Duty on crude oil</strong>. Both were assigned as examples of "ridiculous" tariffs — instruments that, despite their stated purpose, produce outcomes that undermine their own goals.</p>
+    <p>The activity challenged us to look beyond the surface reason for a tariff (usually "national security" or "protecting industry") and ask: <em>what does this tariff actually do?</em> The answers were far more political, and far more ironic, than we expected.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2>Interactive Demonstration</h2></div>
+
+    <div class="tariff-tabs">
+      <button class="tab-btn active" onclick="showTab('copper')">🔶 Copper Tariff (US)</button>
+      <button class="tab-btn" onclick="showTab('oil')">🛢️ Oil Export Duty (KZ)</button>
+      <button class="tab-btn" onclick="showTab('calc')">🧮 Tariff Calculator</button>
+    </div>
+
+    <!-- COPPER PANEL -->
+    <div class="tariff-panel active" id="panel-copper">
+      <div class="chart-box">
+        <div class="chart-title">Global copper production by country — who actually has it?</div>
+        <div class="chart-wrap"><canvas id="copperChart"></canvas></div>
+      </div>
+      <div class="paradox">
+        <div class="label">The Copper Paradox</div>
+        <h3>The US produces 5% of the world's copper — then taxes 100% of its imports at 50%</h3>
+        <p>The US needs copper for weapons, EVs, and electronics. Imposing a 50% tariff doesn't create domestic mines overnight (that takes 10+ years). It just makes everything more expensive — and quietly pushes Kazakhstan, which can't negotiate independently due to EAEU membership, to sell to China instead. The policy intended to weaken Russia's bloc may actually strengthen it.</p>
+      </div>
+      <div class="verdict-row">
+        <div class="verdict-card why">
+          <div class="verdict-label">Why it exists</div>
+          <p>National security framing — copper is critical for defence and green energy. Also part of broader US-China trade war strategy to reduce dependency on Eurasian partners.</p>
+        </div>
+        <div class="verdict-card effect">
+          <div class="verdict-label">Actual effect</div>
+          <p>Kazakhstan's copper exporters lose US market access or absorb the cost. Building new US mines takes 10+ years. No quick domestic production increase.</p>
+        </div>
+        <div class="verdict-card result">
+          <div class="verdict-label">The irony</div>
+          <p>Kazakhstan, unable to negotiate bilaterally (EAEU rules require permission from Russia, Belarus, Armenia, Kyrgyzstan), quietly redirects exports to China — strengthening the bloc the US wants to weaken.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OIL PANEL -->
+    <div class="tariff-panel" id="panel-oil">
+      <p>Kazakhstan's oil export duty is "progressive" — meaning the more expensive oil gets globally, the higher the export tax. It's essentially a <strong>success tax</strong>.</p>
+      <table class="oil-table">
+        <thead><tr><th>Global Oil Price ($/bbl)</th><th>Export Duty Rate ($/ton)</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Below $40</td><td class="rate-cell">$0</td><td>No duty</td></tr>
+          <tr><td>$40 – $60</td><td class="rate-cell">$25/ton</td><td>Low</td></tr>
+          <tr><td>$60 – $80</td><td class="rate-cell">$69/ton</td><td>–</td></tr>
+          <tr class="active-row"><td>$80 – $105 (March 2026 rate)</td><td class="rate-cell">$69/ton</td><td>← Current</td></tr>
+          <tr><td>Above $105</td><td class="rate-cell">$236/ton</td><td>Peak penalty</td></tr>
+        </tbody>
+      </table>
+      <div class="chart-box">
+        <div class="chart-title">The closed-loop irony: export duty → fuel price → inflation → citizens pay</div>
+        <div class="chart-wrap"><canvas id="oilChart"></canvas></div>
+      </div>
+      <div class="paradox">
+        <div class="label">The Oil Paradox</div>
+        <h3>The National Fund grows. The citizen's purchasing power shrinks.</h3>
+        <p>The progressive ECD fills the government's budget during high oil prices — exactly when Kazakhstan's exporters are most competitive. But to offset the tax, fuel subsidies are removed. Combined with the new 16% VAT (up from 12%), transport costs rise, food prices rise, and inflation sits at 11.7% (Feb 2026). The government's wealth is directly funded by citizen cost-of-living.</p>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Global export tax comparison</div>
+        <div class="chart-wrap"><canvas id="compareChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR PANEL -->
+    <div class="tariff-panel" id="panel-calc">
+      <div class="calc-box">
+        <h3>Tariff Impact Calculator</h3>
+        <p class="desc">Adjust the export price and tariff rate to see how a tariff affects the exporter's effective revenue, buyer's cost, and trade volume impact.</p>
+        <div class="slider-row">
+          <div class="slider-group">
+            <label>Export price per ton ($)</label>
+            <input type="range" id="priceSlider" min="100" max="2000" value="600" step="10" oninput="calcTariff()">
+            <div class="slider-val" id="priceVal">$600</div>
+          </div>
+          <div class="slider-group">
+            <label>Tariff rate (%)</label>
+            <input type="range" id="tariffSlider" min="0" max="100" value="50" oninput="calcTariff()">
+            <div class="slider-val" id="tariffVal">50%</div>
+          </div>
+        </div>
+        <div class="result-row">
+          <div class="result-item">
+            <div class="val" id="buyerCost">$900</div>
+            <div class="lbl">Buyer pays</div>
+          </div>
+          <div class="result-item bad">
+            <div class="val" id="exporterLoss">-$300</div>
+            <div class="lbl">Exporter gap</div>
+          </div>
+          <div class="result-item good">
+            <div class="val" id="govRevenue">$300</div>
+            <div class="lbl">Government earns</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2>Evidence from Coursework</h2></div>
+    <p>This project was completed as a group assignment with Zhaniya (ID 2417691). Below are key facts and data points from our research document.</p>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">US Production</div><div class="learn-val">The US produces approximately <strong>5% of global copper</strong> — making it highly import-dependent even while imposing a 50% tariff on copper imports.</div></div>
+      <div class="learn-row"><div class="learn-key">EAEU Constraint</div><div class="learn-val">Kazakhstan's EAEU membership means it <strong>cannot negotiate bilateral trade deals independently</strong>. Any response to the US tariff requires agreement from Russia, Belarus, Armenia, and Kyrgyzstan.</div></div>
+      <div class="learn-row"><div class="learn-key">Oil Duty Rate</div><div class="learn-val">In March 2026, Kazakhstan's oil export duty was set at <strong>$69 per ton</strong>. At prices above $105/bbl, the duty jumps to $236/ton.</div></div>
+      <div class="learn-row"><div class="learn-key">Inflation Impact</div><div class="learn-val">Kazakhstan's inflation was recorded at <strong>11.7% (February 2026)</strong>, partly driven by the removal of fuel subsidies and a VAT increase from 12% to 16%.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Tariffs are often more political than economic. A country can use an export duty as a "wealth grab" from its own industries. The EAEU structure fundamentally limits Kazakhstan's trade autonomy.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Research, data interpretation, critical analysis of stated policy goals vs. actual effects. Learning to trace second-order consequences (tariff → redirect → geopolitical strengthening of rival bloc).</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">What surprised me most: being a resource-rich country isn't straightforwardly good. Kazakhstan's oil wealth is captured by a tax that then raises prices for the very citizens it's supposed to benefit. The system creates wealth at the top while quietly transferring cost downward.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="index.html">← All Projects</a>
+    <a href="p2-autarky.html">Project 02: Autarky →</a>
+  </div>
+</main>
+
+<script>
+// TAB SWITCHING
+function showTab(name){
+  document.querySelectorAll('.tariff-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// COPPER CHART
+new Chart(document.getElementById('copperChart'),{
+  type:'bar',
+  data:{
+    labels:['Chile','Peru','Congo','China','US','Russia','Australia','Zambia','Mexico','Other'],
+    datasets:[{
+      label:'Share of global copper production (%)',
+      data:[27,11,10,8,5,4,5,4,3,23],
+      backgroundColor:['#1a4a72','#2e6da4','#4a85b5','#6b9fc0','#c0392b','#7f8c8d','#95a5a6','#bdc3c7','#d5dbdb','#e8eef4'],
+      borderRadius:4,
+      borderWidth:0
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(26,58,92,0.06)'},ticks:{callback:v=>v+'%',font:{size:11}},max:35}}}
+});
+
+// OIL INFLATION CHART
+new Chart(document.getElementById('oilChart'),{
+  type:'line',
+  data:{
+    labels:['Jan 25','Mar 25','Jun 25','Sep 25','Dec 25','Feb 26'],
+    datasets:[
+      {label:'Inflation rate (%)',data:[8.2,9.1,9.8,10.4,11.1,11.7],borderColor:'#c0392b',backgroundColor:'rgba(192,57,43,0.08)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#c0392b'},
+      {label:'Oil price ($/bbl, scaled)',data:[72,78,82,88,95,99],borderColor:'#b8952a',backgroundColor:'rgba(184,149,42,0.05)',tension:0.4,fill:false,pointRadius:4,pointBackgroundColor:'#b8952a'}
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(26,58,92,0.06)'},ticks:{font:{size:11}}}}}
+});
+
+// COMPARISON CHART
+new Chart(document.getElementById('compareChart'),{
+  type:'bar',
+  data:{
+    labels:['Kazakhstan (ECD)','USA (export)','EU (export)','China (import duty on copper)'],
+    datasets:[{label:'Effective export/import tax (%)',data:[15,0,0,0],backgroundColor:['#c0392b','#1a4a72','#2e5f8a','#e0a030'],borderRadius:4,borderWidth:0}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'rgba(26,58,92,0.06)'},ticks:{callback:v=>v+'%',font:{size:11}},max:25}}}
+});
+
+// CALCULATOR
+function calcTariff(){
+  const price=+document.getElementById('priceSlider').value;
+  const rate=+document.getElementById('tariffSlider').value;
+  const tariffAmt=Math.round(price*rate/100);
+  const buyerCost=price+tariffAmt;
+  document.getElementById('priceVal').textContent='$'+price;
+  document.getElementById('tariffVal').textContent=rate+'%';
+  document.getElementById('buyerCost').textContent='$'+buyerCost;
+  document.getElementById('exporterLoss').textContent='-$'+tariffAmt;
+  document.getElementById('govRevenue').textContent='$'+tariffAmt;
+}
+calcTariff();
+</script>
+</body>
+</html>

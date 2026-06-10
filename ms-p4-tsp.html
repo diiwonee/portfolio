@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MS P4: Travelling Salesman — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--rose:#880e4f;--rose-mid:#ad1457;--rose-light:#f8bbd0;--rose-pale:#fce4ec;--cream:#fff8fb;--mist:#fce4ec;--text-muted:#5a2a40;--ink:#200010}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(255,248,251,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(136,14,79,0.12)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--rose);text-decoration:none}
+.nav-back{font-size:0.74rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.hero{min-height:52vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(160deg,#0d0008 0%,#1a0012 40%,#3d0022 75%,#880e4f 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(248,187,208,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(248,187,208,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#fce4ec;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:#f48fb1}
+.hero-sub{font-size:0.88rem;color:rgba(248,187,208,0.5);line-height:1.65}
+main{max-width:960px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(136,14,79,0.1)}
+.sec-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--rose-light)}
+.sec-head h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--rose)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* DISTANCE TABLE */
+.dist-box{background:#fff;border:0.5px solid rgba(136,14,79,0.1);border-radius:14px;padding:1.8rem;margin:1.5rem 0}
+.dist-title{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+.dist-table{border-collapse:collapse;font-size:0.85rem;width:auto}
+.dist-table th,.dist-table td{padding:0.55rem 0.9rem;border:0.5px solid rgba(136,14,79,0.1);text-align:center;min-width:50px}
+.dist-table th{background:var(--mist);color:var(--rose-mid);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;font-weight:500}
+.dist-table td.diag{background:rgba(136,14,79,0.06);color:var(--text-muted)}
+.dist-table td{color:var(--ink)}
+
+/* TSP EXPLORER */
+.tsp-box{background:#fff;border:0.5px solid rgba(136,14,79,0.1);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.tsp-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--rose);margin-bottom:0.4rem}
+.tsp-desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.network-wrap{position:relative;background:var(--mist);border-radius:12px;overflow:hidden;margin-bottom:1.5rem}
+.controls-row{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.ctrl-label{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.route-btn{font-size:0.75rem;padding:0.45rem 0.9rem;border-radius:8px;border:0.5px solid rgba(136,14,79,0.2);background:transparent;color:var(--text-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.route-btn.active{background:var(--rose);color:#fff;border-color:var(--rose)}
+.route-btn:hover:not(.active){background:var(--mist)}
+.toggle-cd{font-size:0.72rem;padding:0.4rem 0.85rem;border-radius:100px;border:0.5px solid rgba(136,14,79,0.2);cursor:pointer;font-family:'DM Sans',sans-serif;background:transparent;color:var(--text-muted);transition:all 0.2s}
+.toggle-cd.blocked{background:#ffebee;color:#b71c1c;border-color:#e57373}
+.result-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-top:1rem}
+.rs-stat{text-align:center;background:var(--mist);border-radius:8px;padding:0.75rem}
+.rs-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--rose)}
+.rs-stat .lbl{font-size:0.63rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:0.15rem}
+
+/* ALL ROUTES TABLE */
+.routes-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin-top:1rem}
+.routes-table th{text-align:left;padding:0.5rem 0.8rem;font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);border-bottom:0.5px solid rgba(136,14,79,0.1);font-weight:400}
+.routes-table td{padding:0.5rem 0.8rem;border-bottom:0.5px solid rgba(136,14,79,0.06);color:var(--ink)}
+.routes-table tr.optimal td{background:rgba(136,14,79,0.06);font-weight:500;color:var(--rose)}
+.routes-table tr.blocked td{opacity:0.4;text-decoration:line-through}
+
+.learn-box{border:0.5px solid rgba(136,14,79,0.1);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(136,14,79,0.07)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(136,14,79,0.04);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-mid);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(136,14,79,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--rose)}
+@media(max-width:620px){.result-strip{grid-template-columns:1fr 1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← Management Science</a>
+  <a href="index.html" class="nav-back">Home</a>
+</nav>
+<section class="hero">
+  <div class="hero-num">04</div>
+  <div class="hero-content">
+    <div class="eyebrow">Management Science · Project 04</div>
+    <h1>The Travelling<br><em>Salesman Problem</em></h1>
+    <p class="hero-sub">Find the shortest delivery route through 5 towns. Simple to state, surprisingly hard to solve — and impossible at scale without algorithms.</p>
+  </div>
+</section>
+<main>
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Project Overview</h2></div>
+    <p>The <strong>Travelling Salesman Problem (TSP)</strong> is a classic network optimisation problem: given a set of nodes and distances between them, find the shortest route that visits every node exactly once and returns to the start. It's easy to state but computationally explosive — with 10 cities there are over 3 million possible routes.</p>
+    <p>The class activity used a delivery network with 5 locations (Warehouse + 4 towns A–D) and real distances. The task: find the optimal route by hand, then find the new optimal when the C–D route is blocked.</p>
+
+    <div class="dist-box">
+      <div class="dist-title">Delivery network — distance table (km)</div>
+      <table class="dist-table">
+        <thead><tr><th>To/From</th><th>WH</th><th>A</th><th>B</th><th>C</th><th>D</th></tr></thead>
+        <tbody>
+          <tr><td><strong>WH</strong></td><td class="diag">—</td><td>6</td><td>8</td><td>7</td><td>10</td></tr>
+          <tr><td><strong>A</strong></td><td>6</td><td class="diag">—</td><td>4</td><td>3</td><td>7</td></tr>
+          <tr><td><strong>B</strong></td><td>8</td><td>4</td><td class="diag">—</td><td>5</td><td>6</td></tr>
+          <tr><td><strong>C</strong></td><td>7</td><td>3</td><td>5</td><td class="diag">—</td><td>2</td></tr>
+          <tr><td><strong>D</strong></td><td>10</td><td>7</td><td>6</td><td>2</td><td class="diag">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Interactive Network &amp; Route Finder</h2></div>
+    <p>Click a route below to highlight it on the network map. Toggle the C–D connection to simulate the blocked route scenario. The table shows all routes ranked by distance.</p>
+
+    <div class="tsp-box">
+      <h3>Route Explorer</h3>
+      <p class="tsp-desc">Select any route to see it highlighted on the map. Block the C–D route to see how the optimal changes.</p>
+
+      <div class="controls-row">
+        <span class="ctrl-label">Show route:</span>
+        <button class="route-btn active" onclick="setRoute(0)">WH→A→C→D→B→WH</button>
+        <button class="route-btn" onclick="setRoute(1)">WH→A→B→D→C→WH</button>
+        <button class="route-btn" onclick="setRoute(2)">WH→C→A→B→D→WH</button>
+        <button class="route-btn" onclick="setRoute(3)">WH→B→A→C→D→WH</button>
+        <button class="toggle-cd" id="cdBtn" onclick="toggleCD()">Block C–D route</button>
+      </div>
+
+      <div class="network-wrap">
+        <canvas id="networkCanvas" width="860" height="340" style="width:100%;display:block"></canvas>
+      </div>
+
+      <div class="result-strip">
+        <div class="rs-stat"><div class="val" id="rDist">—</div><div class="lbl">Route distance (km)</div></div>
+        <div class="rs-stat"><div class="val" id="rRank">—</div><div class="lbl">Rank</div></div>
+        <div class="rs-stat"><div class="val" id="rOptimal">—</div><div class="lbl">Optimal route</div></div>
+        <div class="rs-stat"><div class="val" id="rFeasible">—</div><div class="lbl">Feasible?</div></div>
+      </div>
+
+      <table class="routes-table" id="routesTable">
+        <thead><tr><th>Rank</th><th>Route</th><th>Distance (km)</th><th>Feasible</th></tr></thead>
+        <tbody id="routesBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Evidence from Coursework</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Activity</div><div class="learn-val">Completed by hand using paper and pencil. First created the network map from the distance table, then enumerated routes systematically. The instruction was explicitly "only use your brain, paper, and pencil."</div></div>
+      <div class="learn-row"><div class="learn-key">Solution 1</div><div class="learn-val">With all routes open: <strong>WH → A → C → D → B → WH = 26 km</strong>. This uses the C–D edge (distance 2), which is by far the shortest in the network.</div></div>
+      <div class="learn-row"><div class="learn-key">Solution 2</div><div class="learn-val">With C–D blocked: must reroute. Best alternative: <strong>WH → A → C → B → D → WH = 32 km</strong>. Losing the C–D shortcut adds 6 km to the minimum distance.</div></div>
+      <div class="learn-row"><div class="learn-key">TSP at scale</div><div class="learn-val">With 5 nodes there are 4! = 24 possible routes. With 20 nodes: 19! ≈ 1.2 × 10¹⁷. No computer can enumerate all routes for large TSPs — this is why heuristic algorithms (nearest neighbour, genetic algorithms) exist.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Network graph theory basics. The computational complexity of TSP (NP-hard). Why the shortest individual edge (C–D = 2km) disproportionately affects the optimal route. Heuristic vs exact methods.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Building network maps from distance tables. Systematic route enumeration. Identifying why certain edges are "high-value" to include. Analysing sensitivity (what happens when a route is blocked?).</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">What surprised me: the tiny C–D edge (just 2km) completely dominates the optimal solution. Remove it and the best route jumps by 6km — 23% longer. In real logistics, this is why single road closures or bridge outages can devastate delivery networks. The fragility is built into the topology.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="ms-p3-decision.html">← Project 03</a>
+    <a href="index.html">Back to Course →</a>
+  </div>
+</main>
+<script>
+// Node positions on 860×340 canvas
+const nodes={WH:{x:100,y:170,label:'WH'},A:{x:280,y:90,label:'A'},B:{x:480,y:90,label:'B'},C:{x:580,y:250,label:'C'},D:{x:740,y:200,label:'D'}};
+const edges=[
+  ['WH','A',6],['WH','B',8],['WH','C',7],['WH','D',10],
+  ['A','B',4],['A','C',3],['A','D',7],
+  ['B','C',5],['B','D',6],
+  ['C','D',2]
+];
+const allRoutes=[
+  ['WH','A','C','D','B','WH'],
+  ['WH','A','B','D','C','WH'],
+  ['WH','C','A','B','D','WH'],
+  ['WH','B','A','C','D','WH'],
+  ['WH','A','D','C','B','WH'],
+  ['WH','B','C','A','D','WH'],
+  ['WH','C','B','A','D','WH'],
+  ['WH','D','C','A','B','WH'],
+  ['WH','A','B','C','D','WH'],
+  ['WH','D','B','A','C','WH'],
+  ['WH','C','D','B','A','WH'],
+  ['WH','D','A','B','C','WH'],
+];
+let currentRoute=0,cdBlocked=false;
+
+function dist(a,b){
+  for(const [n1,n2,d] of edges) if((n1===a&&n2===b)||(n1===b&&n2===a)) return d;
+  return Infinity;
+}
+function routeDist(r,blocked){
+  let total=0;
+  for(let i=0;i<r.length-1;i++){
+    const d=dist(r[i],r[i+1]);
+    if(blocked&&((r[i]==='C'&&r[i+1]==='D')||(r[i]==='D'&&r[i+1]==='C'))) return Infinity;
+    total+=d;
+  }
+  return total;
+}
+function isFeasible(r){return routeDist(r,cdBlocked)<Infinity}
+
+function drawNetwork(){
+  const canvas=document.getElementById('networkCanvas');
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const scale=canvas.width/860;
+
+  // Draw all edges
+  for(const [a,b,d] of edges){
+    const blocked=cdBlocked&&((a==='C'&&b==='D')||(a==='D'&&b==='C'));
+    const na=nodes[a],nb=nodes[b];
+    ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
+    ctx.strokeStyle=blocked?'rgba(200,50,50,0.2)':'rgba(136,14,79,0.12)';
+    ctx.lineWidth=blocked?1:0.8;
+    ctx.setLineDash(blocked?[4,4]:[]);
+    ctx.stroke();ctx.setLineDash([]);
+    // Distance label
+    const mx=(na.x+nb.x)/2,my=(na.y+nb.y)/2;
+    ctx.fillStyle=blocked?'rgba(180,50,50,0.4)':'rgba(90,42,64,0.55)';
+    ctx.font='10px DM Sans';ctx.textAlign='center';
+    ctx.fillText(d+'km',mx,my-4);
+  }
+
+  // Draw current route
+  const route=allRoutes[currentRoute];
+  const feasible=isFeasible(route);
+  for(let i=0;i<route.length-1;i++){
+    const na=nodes[route[i]],nb=nodes[route[i+1]];
+    const isCD=(route[i]==='C'&&route[i+1]==='D')||(route[i]==='D'&&route[i+1]==='C');
+    ctx.beginPath();ctx.moveTo(na.x,na.y);ctx.lineTo(nb.x,nb.y);
+    ctx.strokeStyle=(!feasible&&isCD)?'rgba(200,30,30,0.7)':'rgba(136,14,79,0.85)';
+    ctx.lineWidth=feasible?2.5:1.5;
+    ctx.setLineDash(feasible?[]:[6,4]);
+    ctx.stroke();ctx.setLineDash([]);
+  }
+
+  // Draw nodes
+  for(const [name,n] of Object.entries(nodes)){
+    const onRoute=route.includes(name);
+    ctx.beginPath();ctx.arc(n.x,n.y,name==='WH'?22:16,0,Math.PI*2);
+    ctx.fillStyle=name==='WH'?'#880e4f':(onRoute?'#ad1457':'#f8bbd0');
+    ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=name==='WH'?'#fff':(onRoute?'#fff':'#880e4f');
+    ctx.font=`${name==='WH'?11:12}px DM Sans`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label,n.x,n.y);
+  }
+}
+
+function updateResults(){
+  const route=allRoutes[currentRoute];
+  const d=routeDist(route,cdBlocked);
+  const feasible=d<Infinity;
+  const label=route.join('→');
+  document.getElementById('rDist').textContent=feasible?d+'km':'—';
+  document.getElementById('rFeasible').textContent=feasible?'✓ Yes':'✗ Blocked';
+
+  // Rank all
+  const ranked=allRoutes.map((r,i)=>({i,r,d:routeDist(r,cdBlocked),label:r.join('→')}))
+    .sort((a,b)=>a.d-b.d);
+  const myRank=ranked.findIndex(r=>r.i===currentRoute);
+  document.getElementById('rRank').textContent=feasible?`#${myRank+1}`:'—';
+  document.getElementById('rOptimal').textContent=ranked[0].d<Infinity?ranked[0].d+'km':'—';
+
+  const tbody=document.getElementById('routesBody');
+  tbody.innerHTML='';
+  ranked.slice(0,8).forEach((r,rank)=>{
+    const isCurrentRoute=r.i===currentRoute;
+    const feasible=r.d<Infinity;
+    tbody.innerHTML+=`<tr class="${isCurrentRoute&&feasible?'optimal':''}${!feasible?'blocked':''}">
+      <td>${feasible?`#${rank+1}`:'—'}</td>
+      <td style="font-size:0.78rem">${r.label}</td>
+      <td>${feasible?r.d+' km':'Infeasible'}</td>
+      <td>${feasible?'✓':'✗ C–D blocked'}</td>
+    </tr>`;
+  });
+}
+
+function setRoute(i){
+  currentRoute=i;
+  document.querySelectorAll('.route-btn').forEach((b,idx)=>b.classList.toggle('active',idx===i));
+  drawNetwork();updateResults();
+}
+function toggleCD(){
+  cdBlocked=!cdBlocked;
+  const btn=document.getElementById('cdBtn');
+  btn.classList.toggle('blocked',cdBlocked);
+  btn.textContent=cdBlocked?'✗ C–D blocked (click to restore)':'Block C–D route';
+  drawNetwork();updateResults();
+}
+
+drawNetwork();updateResults();
+</script>
+</body>
+</html>

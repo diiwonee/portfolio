@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 4: Middleman Risks — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--pink:#880e4f;--pink-mid:#ad1457;--pink-light:#f8bbd0;--pink-pale:#fce4ec;--cream:#faf8f4;--text-muted:#4a3040;--ink:#1a0a10;--muted:#7a4060}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(136,14,79,0.15)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--pink);text-decoration:none}
+.nav-back{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.nav-back:hover{color:var(--pink)}
+.hero{min-height:52vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(165deg,#0d0005 0%,#1a0010 40%,#3d001a 70%,#880e4f 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(248,187,208,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(248,187,208,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#fce4ec;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:#f48fb1}
+.hero-sub{font-size:0.88rem;color:rgba(248,187,208,0.55);font-weight:300;line-height:1.6}
+
+main{max-width:900px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(136,14,79,0.15)}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--pink-light)}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--pink)}
+p{font-size:0.88rem;line-height:1.8;color:var(--muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* SUPPLY CHAIN VISUAL */
+.chain-flow{display:flex;align-items:center;gap:0;margin:2rem 0;overflow-x:auto;padding:0.5rem 0}
+.chain-node{background:#fff;border:0.5px solid rgba(136,14,79,0.15);border-radius:12px;padding:1rem 1.2rem;text-align:center;min-width:110px;flex-shrink:0;position:relative}
+.chain-node .node-role{font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--pink);margin-bottom:0.3rem}
+.chain-node .node-name{font-family:'Cormorant Garamond',serif;font-size:0.95rem;font-weight:400;color:var(--ink);margin-bottom:0.3rem}
+.chain-node .node-margin{font-size:0.7rem;color:var(--muted)}
+.chain-node.middleman{background:var(--pink-pale);border-color:var(--pink)}
+.chain-node.middleman .node-role{color:var(--pink-mid)}
+.chain-arrow{font-size:1.2rem;color:var(--pink-light);padding:0 0.3rem;flex-shrink:0}
+
+/* RISK SIMULATOR */
+.sim-box{background:#fff;border:0.5px solid rgba(136,14,79,0.12);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.sim-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--pink);margin-bottom:0.4rem}
+.sim-box .desc{font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.risk-sliders{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+.risk-group label{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:0.4rem}
+.risk-group .slider-row{display:flex;align-items:center;gap:0.75rem}
+.risk-group input[type=range]{flex:1}
+.risk-group .slider-val{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--pink);min-width:40px;text-align:right;font-weight:300}
+.risk-result{border-top:0.5px solid rgba(136,14,79,0.1);padding-top:1.25rem;display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem}
+.risk-stat{text-align:center;border-radius:8px;padding:0.75rem;background:var(--pink-pale)}
+.risk-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300}
+.risk-stat.danger .val{color:#b71c1c}
+.risk-stat.ok .val{color:#1b5e20}
+.risk-stat.neutral .val{color:var(--pink)}
+.risk-stat .lbl{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:0.2rem}
+.risk-verdict{margin-top:1rem;padding:0.85rem 1rem;border-radius:8px;font-size:0.83rem;line-height:1.6;background:var(--pink-pale);color:var(--pink-mid)}
+
+/* BB ANALOGY CARDS */
+.analogy-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.analogy-card{border-radius:12px;overflow:hidden;border:0.5px solid rgba(136,14,79,0.12)}
+.analogy-header{background:var(--pink-pale);padding:0.8rem 1.2rem;display:flex;justify-content:space-between;align-items:center}
+.analogy-header .bb-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ink)}
+.analogy-header .trade-name{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--pink)}
+.analogy-body{padding:1rem 1.2rem;background:#fff}
+.analogy-body p{font-size:0.82rem;margin:0;color:var(--muted);line-height:1.65}
+
+/* LEARN BOX */
+.learn-box{border:0.5px solid rgba(136,14,79,0.12);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(136,14,79,0.08)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(136,14,79,0.04);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--pink-mid);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(136,14,79,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--pink)}
+@media(max-width:620px){.analogy-grid,.risk-sliders,.risk-result{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← International Trade</a>
+  <a href="../index.html" class="nav-back">Home</a>
+</nav>
+<section class="hero">
+  <div class="hero-num">04</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">International Trade · Project 04</div>
+    <h1>Middleman Risks:<br><em>A Breaking Bad Analogy</em></h1>
+    <p class="hero-sub">How does a supply chain intermediary work — and what can a fictional drug empire teach us about trade, margins, and systemic risk?</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2>Project Overview</h2></div>
+    <p>In international trade, <strong>intermediaries</strong> (middlemen) play a crucial role: they connect producers to buyers across borders, absorb information costs, manage risk, and add value through logistics and relationships. But middlemen also concentrate risk — and create fragility when their chain breaks.</p>
+    <p>Breaking Bad's supply chain — from Heisenberg (producer) through distributors to street-level dealers — maps surprisingly well onto a real-world trade intermediary model. Each layer adds margin, absorbs risk, and is vulnerable to disruption at its specific point in the chain. This project uses that analogy to explain how intermediary risk works in global trade.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2>Interactive Demonstration</h2></div>
+    <p>Below is the supply chain from producer to end buyer, mapped both in the Breaking Bad analogy and as a real-world trade example. The middleman layer is highlighted.</p>
+
+    <div class="chain-flow">
+      <div class="chain-node"><div class="node-role">Producer</div><div class="node-name">Walter White</div><div class="node-margin">= Manufacturer / Exporter</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node middleman"><div class="node-role">Distributor 1</div><div class="node-name">Gus Fring</div><div class="node-margin">= Regional Importer</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node middleman"><div class="node-role">Distributor 2</div><div class="node-name">Street Level</div><div class="node-margin">= Wholesaler/Retailer</div></div>
+      <div class="chain-arrow">→</div>
+      <div class="chain-node"><div class="node-role">End Buyer</div><div class="node-name">Consumer</div><div class="node-margin">= End Market</div></div>
+    </div>
+
+    <div class="analogy-grid">
+      <div class="analogy-card">
+        <div class="analogy-header"><div class="bb-name">Heisenberg (Producer)</div><div class="trade-name">Exporter / Manufacturer</div></div>
+        <div class="analogy-body"><p>Produces the good. Has specialised knowledge and production capacity. Dependent on the distribution chain to reach the market — cannot access end buyers directly. Risk: if the chain breaks above him, he has no route to market.</p></div>
+      </div>
+      <div class="analogy-card">
+        <div class="analogy-header"><div class="bb-name">Gus Fring (Distributor)</div><div class="trade-name">Regional Intermediary</div></div>
+        <div class="analogy-body"><p>Controls the logistics, relationships, and route to market. Adds value through information, network access, and risk management. Has significant leverage over the producer — and is the single point of failure if disrupted. Classic middleman position.</p></div>
+      </div>
+      <div class="analogy-card">
+        <div class="analogy-header"><div class="bb-name">Street Dealers</div><div class="trade-name">Wholesalers / Retailers</div></div>
+        <div class="analogy-body"><p>Final distribution layer before the end consumer. Absorb local market risk. Have direct knowledge of demand conditions. Most exposed to enforcement (regulatory) risk — the equivalent of tariffs, customs inspections, and local regulation.</p></div>
+      </div>
+      <div class="analogy-card">
+        <div class="analogy-header"><div class="bb-name">The DEA</div><div class="trade-name">Trade Barriers / Regulators</div></div>
+        <div class="analogy-body"><p>External enforcement mechanism that raises the cost of doing business, creates compliance costs, and periodically disrupts the chain entirely. Equivalent to tariffs, customs duties, sanctions, and regulatory barriers in international trade.</p></div>
+      </div>
+    </div>
+
+    <div class="sim-box">
+      <h3>Middleman Risk Simulator</h3>
+      <p class="desc">Adjust the variables below to see how middleman margin, chain length, and disruption probability affect the final price and the exporter's net earnings.</p>
+      <div class="risk-sliders">
+        <div class="risk-group"><label>Producer price ($)</label><div class="slider-row"><input type="range" id="prodPrice" min="10" max="500" value="100" oninput="calcRisk()"><span class="slider-val" id="prodPriceVal">$100</span></div></div>
+        <div class="risk-group"><label>Middleman margin (%)</label><div class="slider-row"><input type="range" id="margin" min="5" max="80" value="30" oninput="calcRisk()"><span class="slider-val" id="marginVal">30%</span></div></div>
+        <div class="risk-group"><label>Chain layers</label><div class="slider-row"><input type="range" id="layers" min="1" max="5" step="1" value="2" oninput="calcRisk()"><span class="slider-val" id="layersVal">2</span></div></div>
+        <div class="risk-group"><label>Disruption risk per layer (%)</label><div class="slider-row"><input type="range" id="disruption" min="0" max="50" value="15" oninput="calcRisk()"><span class="slider-val" id="disruptionVal">15%</span></div></div>
+      </div>
+      <div class="risk-result">
+        <div class="risk-stat neutral"><div class="val" id="finalPrice">-</div><div class="lbl">Final consumer price</div></div>
+        <div class="risk-stat danger"><div class="val" id="producerShare">-</div><div class="lbl">Producer's share</div></div>
+        <div class="risk-stat neutral"><div class="val" id="chainCapture">-</div><div class="lbl">Chain captures</div></div>
+        <div class="risk-stat ok"><div class="val" id="surviveProb">-</div><div class="lbl">Chain survives</div></div>
+      </div>
+      <div class="risk-verdict" id="riskVerdict"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2>Evidence &amp; Analysis</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Core concept</div><div class="learn-val">Intermediaries add value by reducing <strong>transaction costs</strong> — the costs of finding buyers, negotiating, and enforcing contracts across borders. Without them, producers and consumers couldn't connect efficiently across distance and information gaps.</div></div>
+      <div class="learn-row"><div class="learn-key">The risk</div><div class="learn-val">Each intermediary layer creates a <strong>single point of failure</strong>. When Gus is eliminated, the whole chain collapses — not because production stops, but because the distribution network is severed. Same in trade: a key importer going bankrupt, a port closing, or a regulatory change can halt an entire supply chain.</div></div>
+      <div class="learn-row"><div class="learn-key">Margin capture</div><div class="learn-val">The longer the chain, the larger the gap between producer price and consumer price — and the smaller the producer's share. This is a real tension in global commodity trade: coffee farmers may receive 1-3% of the retail price of a cup of coffee.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Transaction cost theory. The role of information asymmetry in trade intermediation. How chain length relates to price markup and producer vulnerability.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Applying an analogy from popular culture to abstract economic concepts. Building a quantitative model from a qualitative idea. Systems thinking across a supply chain.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">The Breaking Bad analogy worked better than expected — not because the show is about economics, but because the writers understood the logic of value chains and power dynamics intuitively. Good storytelling often encodes economic logic. The difficult part was not making it silly — keeping the analysis serious even with a dramatic frame.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="p3-comparative.html">← Project 03</a>
+    <a href="p5-absolute.html">Project 05 →</a>
+  </div>
+</main>
+
+<script>
+function calcRisk(){
+  const prod=+document.getElementById('prodPrice').value;
+  const margin=+document.getElementById('margin').value/100;
+  const layers=+document.getElementById('layers').value;
+  const disruptRisk=+document.getElementById('disruption').value/100;
+  document.getElementById('prodPriceVal').textContent='$'+prod;
+  document.getElementById('marginVal').textContent=Math.round(margin*100)+'%';
+  document.getElementById('layersVal').textContent=layers;
+  document.getElementById('disruptionVal').textContent=Math.round(disruptRisk*100)+'%';
+  let price=prod;
+  for(let i=0;i<layers;i++) price=price*(1+margin);
+  const finalP=Math.round(price);
+  const producerShare=Math.round((prod/finalP)*100);
+  const chainCapture=100-producerShare;
+  const surviveProb=Math.round(Math.pow(1-disruptRisk,layers)*100);
+  document.getElementById('finalPrice').textContent='$'+finalP;
+  document.getElementById('producerShare').textContent=producerShare+'%';
+  document.getElementById('chainCapture').textContent=chainCapture+'%';
+  document.getElementById('surviveProb').textContent=surviveProb+'%';
+  const v=document.getElementById('riskVerdict');
+  if(surviveProb<50){
+    v.textContent=`With ${layers} layers each carrying ${Math.round(disruptRisk*100)}% disruption risk, there's a ${100-surviveProb}% chance the chain fails to complete. The producer receives only ${producerShare}% of the final price. High-risk, low-return for the exporter.`;
+  } else if(producerShare<25){
+    v.textContent=`The chain completes with ${surviveProb}% probability — but the producer only captures ${producerShare}% of the final value. The middlemen are profitable; the producer is not. Consider shortening the chain or negotiating better terms.`;
+  } else {
+    v.textContent=`Relatively efficient chain: ${surviveProb}% survival probability, producer earns ${producerShare}% of the final price. The middlemen add value while leaving reasonable margin for the producer.`;
+  }
+}
+calcRisk();
+</script>
+</body>
+</html>

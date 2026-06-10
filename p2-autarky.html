@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 2: Autarky — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--amber:#b8952a;--amber-dark:#7a5e0a;--amber-light:#f5e9c0;--ink:#1a1a0d;--parch:#faf6e8;--paper:#f0e8cc;--muted:#7a6a40;--cream:#faf8f4;--blue:#1a3a5c}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--parch);color:var(--ink)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,246,232,0.94);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(122,90,10,0.2)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--amber-dark);text-decoration:none}
+.nav-back{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--amber-dark)}
+
+.hero{min-height:55vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(165deg,#0d0a02 0%,#1a1505 30%,#2d2008 60%,#4a3510 100%);position:relative;overflow:hidden}
+.hero-pattern{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(184,149,42,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(184,149,42,0.05) 0%,transparent 40%);pointer-events:none}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(245,233,192,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:680px}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(245,233,192,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#f5e9c0;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{font-size:0.88rem;color:rgba(245,233,192,0.55);font-weight:300;line-height:1.6;font-style:italic}
+
+main{max-width:860px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(122,90,10,0.2)}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--amber)}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--ink)}
+p{font-size:0.88rem;line-height:1.8;color:var(--muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* AUTARKY EXPLAINER */
+.concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.concept-card{border-radius:12px;padding:1.5rem;border:0.5px solid rgba(122,90,10,0.15)}
+.concept-card.closed{background:rgba(26,21,5,0.06)}
+.concept-card.open{background:rgba(184,149,42,0.06)}
+.concept-card .label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.concept-card h4{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--ink);margin-bottom:0.5rem}
+.concept-card p{font-size:0.82rem;margin:0}
+
+/* NOVEL READER */
+.novel-reader{background:var(--paper);border:0.5px solid rgba(122,90,10,0.2);border-radius:16px;overflow:hidden;margin:1.5rem 0;position:relative}
+.chapter-nav{background:rgba(26,21,5,0.06);border-bottom:0.5px solid rgba(122,90,10,0.15);padding:1rem 1.5rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
+.chapter-nav span{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-right:0.5rem}
+.ch-btn{font-size:0.72rem;padding:0.4rem 0.85rem;border-radius:100px;border:0.5px solid rgba(122,90,10,0.25);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.ch-btn.active{background:var(--amber);color:#fff;border-color:var(--amber)}
+.novel-content{padding:2.5rem;min-height:400px}
+.chapter-header{margin-bottom:1.5rem}
+.chapter-num{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--amber);margin-bottom:0.4rem}
+.chapter-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ink);font-style:italic;line-height:1.2}
+.chapter-concept{display:inline-block;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;background:var(--amber-light);color:var(--amber-dark);border-radius:100px;padding:0.3rem 0.8rem;margin:0.75rem 0 1.25rem}
+.novel-body{font-family:'Cormorant Garamond',serif;font-size:1.05rem;line-height:1.95;color:#2d2008}
+.novel-body p{color:#2d2008;font-size:1.05rem;font-family:'Cormorant Garamond',serif;margin-bottom:1.2rem}
+.novel-body em{font-style:italic;color:var(--amber-dark)}
+.novel-footer{border-top:0.5px solid rgba(122,90,10,0.12);padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(26,21,5,0.03)}
+.novel-prog{font-size:0.72rem;color:var(--muted);letter-spacing:0.08em}
+.novel-nav-btn{font-size:0.75rem;padding:0.45rem 1.1rem;border-radius:100px;border:0.5px solid rgba(122,90,10,0.25);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.novel-nav-btn:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+
+/* AUTARKY SPECTRUM */
+.spectrum-bar{height:12px;border-radius:100px;background:linear-gradient(90deg,#1a1505,#4a3510,#b8952a,#f5e9c0);margin:1rem 0;position:relative}
+.spectrum-bar .marker{position:absolute;top:-20px;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);transform:translateX(-50%)}
+.spectrum-bar .marker-line{position:absolute;top:0;bottom:0;width:2px;background:rgba(26,21,5,0.4)}
+.spectrum-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:0.3rem}
+
+/* LEARN BOX */
+.learn-box{border:0.5px solid rgba(122,90,10,0.15);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(122,90,10,0.1)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(122,90,10,0.05);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dark);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(122,90,10,0.15)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--amber-dark)}
+@media(max-width:620px){.concept-grid{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← International Trade</a>
+  <a href="../index.html" class="nav-back">Home</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-num">02</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">International Trade · Project 02</div>
+    <h1>Autarky &amp;<br><em>Isolation</em></h1>
+    <p class="hero-sub">"In the beginning was the Number. And the Number was We." — Zamyatin, We (1924)</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2>Project Overview</h2></div>
+    <p>This project explores <strong>autarky</strong> — a state of complete economic self-sufficiency where a nation refuses all trade with the outside world. The assignment asked for a fiction story integrating course concepts: autarky, protectionism, tariffs, the gravity model, and globalization.</p>
+    <p>Inspired by Yevgeny Zamyatin's novel <em>We</em> (1924) — a foundational dystopian text about a perfectly rational, isolated civilization — the story below follows a similar world six chapters at a time, showing how absolute autarky produces both stability and stagnation, both safety and suffocation.</p>
+    <div class="concept-grid">
+      <div class="concept-card closed">
+        <div class="label">Autarky</div>
+        <h4>Self-sufficiency as ideology</h4>
+        <p>A state produces everything it needs internally. No imports, no exports, no external dependencies. Theoretically safe from global shocks — but also from growth.</p>
+      </div>
+      <div class="concept-card open">
+        <div class="label">The Alternative</div>
+        <h4>Comparative advantage</h4>
+        <p>Trade allows specialisation: make what you're relatively better at, exchange for the rest. Even weak economies gain from trade. Autarky gives up this gain entirely.</p>
+      </div>
+    </div>
+    <div class="spectrum-bar">
+      <div class="marker-line" style="left:8%"><div class="marker" style="left:0">Pure autarky</div></div>
+      <div class="marker-line" style="left:50%"><div class="marker">Mixed</div></div>
+      <div class="marker-line" style="left:92%"><div class="marker">Free trade</div></div>
+    </div>
+    <div class="spectrum-labels"><span>North Korea, 1984</span><span>Most countries</span><span>Open economies</span></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2>The Novel — Six Chapters</h2></div>
+    <p>Read the story chapter by chapter. Each chapter embeds a key concept from International Trade — hover the gold tag to see which one.</p>
+
+    <div class="novel-reader">
+      <div class="chapter-nav">
+        <span>Chapter</span>
+        <button class="ch-btn active" onclick="goChapter(0)">I</button>
+        <button class="ch-btn" onclick="goChapter(1)">II</button>
+        <button class="ch-btn" onclick="goChapter(2)">III</button>
+        <button class="ch-btn" onclick="goChapter(3)">IV</button>
+        <button class="ch-btn" onclick="goChapter(4)">V</button>
+        <button class="ch-btn" onclick="goChapter(5)">VI</button>
+      </div>
+      <div class="novel-content" id="novelContent"></div>
+      <div class="novel-footer">
+        <span class="novel-prog" id="progText">Chapter 1 of 6</span>
+        <div style="display:flex;gap:0.5rem">
+          <button class="novel-nav-btn" onclick="prevCh()">← Previous</button>
+          <button class="novel-nav-btn" onclick="nextCh()">Next →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2>Evidence &amp; Concepts</h2></div>
+    <p>The assignment required integrating course topics into a cohesive fiction. Below is the concept map linking story events to International Trade theory.</p>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Autarky</div><div class="learn-val">The Collective lives in complete self-sufficiency. No trade routes, no foreign goods. The Wall is both physical and ideological — the perfect autarkic barrier.</div></div>
+      <div class="learn-row"><div class="learn-key">Gravity Model</div><div class="learn-val">When Mira discovers maps of distant lands, she realizes trade volume once correlated with distance and size — the Collective traded with its closest neighbors most. The model predicted it; the Collapse severed it.</div></div>
+      <div class="learn-row"><div class="learn-key">Comparative Advantage</div><div class="learn-val">The Collective can grow grain efficiently but cannot produce medicine. Outside traders have medicine but poor grain yields. Ricardo would say: trade is beneficial for both. The Elders refuse.</div></div>
+      <div class="learn-row"><div class="learn-key">Globalization</div><div class="learn-val">Chapter VI's ending — the Wall fractures — represents the irreversibility of contact. Once seen, the outside world cannot be unseen. Globalization, like knowledge, cannot be un-spread.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Autarky is not simply "no trade" — it is an active, sustained ideological commitment that requires constant suppression of information about the outside world to maintain. It cannot survive contact.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Synthesising economic theory into creative narrative. Understanding how concepts like comparative advantage aren't just mathematical — they have human stakes. Writing fiction as a tool for economic reasoning.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">The most difficult part was making autarky feel internally logical — because from inside it, it makes sense. The Collective isn't evil; it's afraid. And fear, it turns out, is the most common real-world reason for protectionism.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="p1-tariffs.html">← Project 01</a>
+    <a href="p3-comparative.html">Project 03 →</a>
+  </div>
+</main>
+
+<script>
+const chapters=[
+  {num:"Chapter I",title:"The Wall",concept:"Autarky",body:`<p>We do not speak of what lies beyond the Wall. The children are taught this before they learn their numbers. The Wall is safety; the Wall is order; the Wall is the reason the Collapse did not consume us as it consumed them.</p><p>I am Mira-7, Analyst of Grain Outputs, Third Sector. My function is to count what we grow, what we consume, what remains. The Collective provides everything: grain, cloth, medicine, certainty. We want for nothing — or so the morning broadcasts remind us, their words rising with the sun like a second sunrise.</p><p>Today I found something in the archive basement. A map. Old paper, edges soft as skin. It showed the Wall — our Wall — and beyond it, symbols I had no language for. <em>Cities</em>, the label read. <em>Ports. Trade routes.</em></p><p>I had never heard the word "trade" used to mean anything other than the exchange of labour credits. I took the map home and hid it inside my mattress.</p>`},
+  {num:"Chapter II",title:"The Number We Do Not Say",concept:"Protectionism & Tariffs",body:`<p>There is a man in Sector Nine who grows a medicinal herb that grows nowhere else in the Collective. We call it Greenmoss. It treats the lung-fever that takes the elderly in winter. The Healers ration it carefully — three doses per household, distributed by algorithm.</p><p>Last winter, forty-three people died of lung-fever. The algorithm determined this was within acceptable parameters.</p><p>I began, quietly, to ask questions. How much Greenmoss does Sector Nine produce? The answer: three hundred kilograms. How much is needed? The answer — after careful extraction from reports meant for other eyes — was eight hundred.</p><p>The deficit was five hundred kilograms. I found a note in the archive: before the Wall, this herb grew abundantly two hundred kilometres north, in a region the map called <em>the Outer Provinces</em>. They had surplus. We had grain. There was a word for what could have happened between us. The word was <em>trade</em>.</p><p>The Elders had chosen forty-three deaths over that word.</p>`},
+  {num:"Chapter III",title:"The Gravity of Things",concept:"Gravity Model",body:`<p>I have become obsessed with the map. I study it at night, by the light of my regulated lamp (eight watts, six hours daily). I begin to see patterns.</p><p>The trade routes on the map — dotted lines connecting cities — were not random. They clustered between places that were large and close. Far cities traded less; small cities traded less. There was a logic to it: <em>distance punished, size rewarded.</em> It was as if gravity itself governed commerce, pulling large economies together, letting small or distant ones drift.</p><p>The Collective, behind its Wall, had severed every such line. We were a planet of one, orbiting nothing.</p><p>I thought: what if we had kept even one route? One line to one city, two hundred kilometres north, where Greenmoss grows wild? The fever deaths would have been fewer. The grain we could have offered was more than sufficient. The mathematics were not complicated.</p><p>But mathematics, the Elders would say, is not the point. <em>Safety</em> is the point. The Wall is safety.</p><p>I am beginning to think the Wall is fear wearing the mask of mathematics.</p>`},
+  {num:"Chapter IV",title:"What Mira Discovered",concept:"Comparative Advantage",body:`<p>His name is Dayan. He works in the Water Purification unit and he is not supposed to speak to Analysts. We met at the edges of our sectors, which border one another, in the thin gap between two authorised routes where the surveillance cameras have a seven-second blind spot.</p><p>"I know what you've been doing," he said. "You've been reading the archive."</p><p>I said nothing.</p><p>"Before the Wall," he said, "the Outer Provinces had things we lacked. We had things they lacked. And the amazing thing — the thing the Elders will not teach — is that both sides benefited from the exchange. Even if one side was better at producing <em>everything</em>. Even then, trade made both richer."</p><p>"That seems impossible," I said.</p><p>"That's what they want you to think," Dayan said. "It's called comparative advantage. You specialise in what you're <em>relatively</em> better at, and trade for the rest. The total output of both sides grows. It was proven by a man named Ricardo. Two hundred years ago. The math is simple."</p><p>I went home and confirmed it. He was right. The math was simple. Forty-three people had died for an ideology that could not survive a single undergraduate economics course.</p>`},
+  {num:"Chapter V",title:"The Decision",concept:"Autarky vs Openness",body:`<p>I have a choice. There are always choices, even inside walls.</p><p>I can submit the analysis to the Council, properly formatted, with citations and projections. The probability that it will be accepted: I estimate four percent. The probability I will be reassigned to a less sensitive function: sixty percent. The probability of something worse: I choose not to calculate.</p><p>Or I can do nothing. Forty-three people next winter. Perhaps more if the harvest weakens. The algorithm will call it acceptable. I will call it nothing, because to call it something would require me to act.</p><p>Or — and this is the option I had not allowed myself to consider until Dayan said it plainly — I can find a way through. Not over the Wall. Not a dramatic gesture. Something smaller: a signal. A radio frequency. A message left where someone on the other side might find it.</p><p><em>We have grain surplus. We need Greenmoss. Is there anyone receiving this?</em></p><p>I sent it on a Tuesday evening, during the seven-second window, through a water pipe that, according to archive records, once carried something other than water.</p><p>I waited.</p>`},
+  {num:"Chapter VI",title:"The Fracture",concept:"Globalization is irreversible",body:`<p>Three weeks later, someone answered.</p><p>Not a voice — a pattern. Clicks in the pipe, spaced like the number sequences I use for grain outputs. I decoded it in four hours. It read:</p><p><em>We receive. We have Greenmoss, substantial surplus. We need grain and water purification knowledge. Terms open for discussion.</em></p><p>I showed Dayan. He looked at the message for a long time.</p><p>"You know what this means," he said.</p><p>"Yes."</p><p>"Once you respond — once you begin — it cannot be undone. The Wall does not fall in a day. But the idea of the Wall does. The moment we trade, we prove the Elders wrong. The moment we prove them wrong, others will ask questions. The questions will compound. Walls made of fear require constant maintenance. One crack and the whole structure begins to breathe."</p><p>I looked at the map. The dotted trade routes. The gravity of large things pulling toward each other across distance, across ideology, across walls.</p><p>I sent back: <em>Terms open for discussion. First shipment: 40 kilograms grain, sealed. Proposed exchange: 10 kilograms Greenmoss. Coordinates follow.</em></p><p>The Collective did not know it yet. But it had just begun to trade. And once begun, some things — like knowledge, like contact, like the knowledge that the outside world exists and is willing to talk — cannot be made to un-begin.</p><p>The Wall still stood. But something in it had changed.</p><p>It had learned to breathe.</p>`}
+];
+
+let cur=0;
+function render(){
+  const ch=chapters[cur];
+  document.getElementById('novelContent').innerHTML=`<div class="chapter-header"><div class="chapter-num">${ch.num}</div><div class="chapter-title">${ch.title}</div><div class="chapter-concept">Concept: ${ch.concept}</div></div><div class="novel-body">${ch.body}</div>`;
+  document.getElementById('progText').textContent=`Chapter ${cur+1} of ${chapters.length}`;
+  document.querySelectorAll('.ch-btn').forEach((b,i)=>b.classList.toggle('active',i===cur));
+}
+function goChapter(i){cur=i;render()}
+function nextCh(){if(cur<chapters.length-1){cur++;render()}}
+function prevCh(){if(cur>0){cur--;render()}}
+render();
+</script>
+</body>
+</html>

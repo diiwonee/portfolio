@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MS P1: Pizza Optimiser — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--amber:#b8952a;--amber-dark:#7a5e0a;--amber-mid:#d4a820;--amber-light:#f5e9c0;--cream:#faf8f0;--mist:#f5f0e0;--text-muted:#6b5a30;--ink:#1a1505;--green:#1b5e20}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,240,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(184,149,42,0.15)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--amber-dark);text-decoration:none}
+.nav-back{font-size:0.74rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.nav-back:hover{color:var(--amber-dark)}
+
+.hero{min-height:52vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(160deg,#0d0a02 0%,#1a1505 40%,#3d2d08 75%,#6b4a15 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(245,233,192,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(245,233,192,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#f5e9c0;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{font-size:0.88rem;color:rgba(245,233,192,0.5);font-weight:300;line-height:1.65}
+
+main{max-width:920px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(184,149,42,0.15)}
+.sec-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--amber-light)}
+.sec-head h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--amber-dark)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* LP NOTATION DISPLAY */
+.lp-box{background:#fff;border:0.5px solid rgba(184,149,42,0.15);border-radius:14px;padding:1.8rem 2rem;margin:1.5rem 0;font-family:'Cormorant Garamond',serif}
+.lp-box h3{font-size:1rem;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--amber-dark);font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.2rem}
+.lp-line{margin:0.5rem 0;font-size:1.05rem;color:var(--ink);line-height:1.6}
+.lp-line .label{font-size:0.7rem;font-family:'DM Sans',sans-serif;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.2rem}
+.lp-line .formula{font-size:1.1rem;color:var(--ink)}
+.lp-line .formula .var{color:var(--amber-dark);font-weight:600}
+.lp-divider{border:none;border-top:0.5px solid rgba(184,149,42,0.12);margin:1rem 0}
+
+/* SOLVER */
+.solver-box{background:#fff;border:0.5px solid rgba(184,149,42,0.12);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.solver-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--amber-dark);margin-bottom:0.4rem}
+.solver-desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.pizza-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.pizza-block{background:var(--mist);border-radius:10px;padding:1.2rem}
+.pizza-block h4{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber-dark);margin-bottom:1rem;font-weight:500}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.6rem}
+.inp-group label{font-size:0.66rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.25rem}
+.inp-group input{width:100%;padding:0.38rem 0.6rem;border:0.5px solid rgba(184,149,42,0.2);border-radius:6px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:#fff}
+.constraint-row{background:var(--mist);border-radius:10px;padding:1.2rem;margin-bottom:1rem}
+.constraint-row h4{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber-dark);margin-bottom:0.8rem;font-weight:500}
+.constraint-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem}
+.solve-btn{width:100%;padding:0.75rem;background:var(--amber-dark);color:#fff;border:none;border-radius:8px;font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:background 0.2s;margin-top:0.5rem}
+.solve-btn:hover{background:var(--amber)}
+.result-panel{border-top:0.5px solid rgba(184,149,42,0.1);padding-top:1.5rem;margin-top:1rem}
+.result-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-bottom:1rem}
+.res-stat{text-align:center;background:var(--mist);border-radius:8px;padding:0.8rem}
+.res-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--amber-dark)}
+.res-stat .lbl{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem}
+.feasibility{padding:0.85rem 1rem;border-radius:8px;font-size:0.83rem;line-height:1.6;margin-top:0.5rem}
+.feasibility.ok{background:#e8f5e9;color:#1b5e20}
+.feasibility.warn{background:#fff3e0;color:#e65100}
+.feasibility.fail{background:#ffebee;color:#b71c1c}
+
+/* CHART */
+.chart-box{background:#fff;border:0.5px solid rgba(184,149,42,0.1);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.chart-title{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+.chart-wrap{position:relative;height:260px}
+
+/* LEARN BOX */
+.learn-box{border:0.5px solid rgba(184,149,42,0.12);border-radius:14px;overflow:hidden}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(184,149,42,0.08)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(184,149,42,0.05);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dark);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(184,149,42,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--amber-dark)}
+
+@media(max-width:620px){.pizza-grid,.result-row,.input-row,.constraint-inputs{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← Management Science</a>
+  <a href="index.html" class="nav-back">Home</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-num">01</div>
+  <div class="hero-content">
+    <div class="eyebrow">Management Science · Project 01</div>
+    <h1>The Pizza Optimiser —<br><em>Linear Programming</em></h1>
+    <p class="hero-sub">How many of each pizza to produce to maximise profit? A deceptively simple question that opens the door to linear optimisation.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Project Overview</h2></div>
+    <p>The Pizza Optimiser was our introduction to <strong>mathematical modelling</strong> and linear programming. The activity asked: given two types of pizza with different profits, ingredient costs, and labour requirements — and limited resources — how many of each should you produce to maximise profit?</p>
+    <p>This led us to formalise the problem using proper LP notation from Chapter 4: defining <strong>decision variables</strong>, an <strong>objective function</strong>, <strong>parameters</strong>, <strong>sets</strong>, and <strong>constraints</strong>. The beauty of LP is that once you write it down formally, the math finds the answer.</p>
+
+    <div class="lp-box">
+      <h3>Standard LP Notation — Pizza Problem</h3>
+      <div class="lp-line">
+        <span class="label">Sets</span>
+        <span class="formula">𝑃 = {Margherita, Pepperoni} — the set of pizza types</span>
+      </div>
+      <hr class="lp-divider">
+      <div class="lp-line">
+        <span class="label">Decision Variables</span>
+        <span class="formula"><span class="var">x₁</span> = units of Margherita produced &nbsp;|&nbsp; <span class="var">x₂</span> = units of Pepperoni produced</span>
+      </div>
+      <hr class="lp-divider">
+      <div class="lp-line">
+        <span class="label">Objective Function (maximise profit)</span>
+        <span class="formula">max <span class="var">Z</span> = p₁x₁ + p₂x₂</span>
+      </div>
+      <hr class="lp-divider">
+      <div class="lp-line">
+        <span class="label">Subject to Constraints</span>
+        <span class="formula">Dough: d₁x₁ + d₂x₂ ≤ D_max</span>
+      </div>
+      <div class="lp-line" style="margin-top:0.3rem">
+        <span class="formula">Labour: l₁x₁ + l₂x₂ ≤ L_max</span>
+      </div>
+      <div class="lp-line" style="margin-top:0.3rem">
+        <span class="formula">Non-negativity: x₁, x₂ ≥ 0</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Interactive LP Solver</h2></div>
+    <p>Adjust the profit and resource requirements for two pizza types, set your resource limits, then solve. The solver finds the optimal production quantities using the graphical method logic.</p>
+
+    <div class="solver-box">
+      <h3>Pizza LP Solver</h3>
+      <p class="solver-desc">Enter your parameters below. The solver maximises total profit subject to your dough and labour constraints.</p>
+
+      <div class="pizza-grid">
+        <div class="pizza-block">
+          <h4>Pizza Type 1 (x₁)</h4>
+          <div class="input-row">
+            <div class="inp-group"><label>Name</label><input type="text" id="p1name" value="Margherita"></div>
+            <div class="inp-group"><label>Profit ($)</label><input type="number" id="p1profit" value="8" min="0" oninput="solve()"></div>
+          </div>
+          <div class="input-row">
+            <div class="inp-group"><label>Dough (kg)</label><input type="number" id="p1dough" value="0.3" min="0" step="0.05" oninput="solve()"></div>
+            <div class="inp-group"><label>Labour (min)</label><input type="number" id="p1labour" value="15" min="0" oninput="solve()"></div>
+          </div>
+        </div>
+        <div class="pizza-block">
+          <h4>Pizza Type 2 (x₂)</h4>
+          <div class="input-row">
+            <div class="inp-group"><label>Name</label><input type="text" id="p2name" value="Pepperoni"></div>
+            <div class="inp-group"><label>Profit ($)</label><input type="number" id="p2profit" value="12" min="0" oninput="solve()"></div>
+          </div>
+          <div class="input-row">
+            <div class="inp-group"><label>Dough (kg)</label><input type="number" id="p2dough" value="0.4" min="0" step="0.05" oninput="solve()"></div>
+            <div class="inp-group"><label>Labour (min)</label><input type="number" id="p2labour" value="20" min="0" oninput="solve()"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="constraint-row">
+        <h4>Resource Limits</h4>
+        <div class="constraint-inputs">
+          <div class="inp-group"><label>Max dough (kg)</label><input type="number" id="maxDough" value="40" min="1" oninput="solve()"></div>
+          <div class="inp-group"><label>Max labour (min)</label><input type="number" id="maxLabour" value="1200" min="1" oninput="solve()"></div>
+          <div class="inp-group"><label>Max x₁ demand</label><input type="number" id="maxX1" value="100" min="1" oninput="solve()"></div>
+          <div class="inp-group"><label>Max x₂ demand</label><input type="number" id="maxX2" value="100" min="1" oninput="solve()"></div>
+        </div>
+      </div>
+
+      <div class="result-panel">
+        <div class="result-row">
+          <div class="res-stat"><div class="val" id="optX1">—</div><div class="lbl" id="lbl1">Margherita units</div></div>
+          <div class="res-stat"><div class="val" id="optX2">—</div><div class="lbl" id="lbl2">Pepperoni units</div></div>
+          <div class="res-stat"><div class="val" id="optProfit">—</div><div class="lbl">Max profit ($)</div></div>
+          <div class="res-stat"><div class="val" id="labourUsed">—</div><div class="lbl">Labour used (%)</div></div>
+        </div>
+        <div class="feasibility" id="feasBox">Adjust parameters to solve</div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-title">Feasible region — profit vs production mix</div>
+      <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Evidence from Coursework</h2></div>
+    <p>The Pizza Optimiser was an in-class activity followed by a custom optimisation problem assignment. We used AI to generate five similar LP problems and selected one to solve with proper LP notation.</p>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Activity</div><div class="learn-val">Completed the Pizza Optimiser document in class. Defined each part with LP notation from Chapter 4: sets, parameters, decision variables, objective function, constraints.</div></div>
+      <div class="learn-row"><div class="learn-key">Assignment</div><div class="learn-val">Used AI to generate 5 custom LP problems based on the Pizza Optimiser structure. Selected one, solved it in a Google Sheet, and submitted with full notation and linked AI conversation.</div></div>
+      <div class="learn-row"><div class="learn-key">Key insight</div><div class="learn-val">The objective function is always linear — profit per unit × quantity. The constraints form a <em>feasible region</em>. The optimal solution always lies at a corner (vertex) of that region. Once you see it geometrically, it clicks.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Linear programming structure: sets, parameters, decision variables, objective function, constraints. The concept of the feasible region and why the optimal solution is always at a vertex.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Translating a word problem into LP notation. Using spreadsheet solvers. Prompting AI to generate parallel problems. Verifying solutions against constraints manually.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">The hardest part was the notation — it felt overly formal for what seemed like a simple problem. But once I saw that the notation is what lets computers solve problems with hundreds of variables, it made sense. The formalism is the point.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="index.html">← All Projects</a>
+    <a href="ms-p2-pinocchio.html">Project 02: Pinocchio →</a>
+  </div>
+</main>
+
+<script>
+let profitChart;
+
+function solve(){
+  const p1=+document.getElementById('p1profit').value||0;
+  const p2=+document.getElementById('p2profit').value||0;
+  const d1=+document.getElementById('p1dough').value||0.01;
+  const d2=+document.getElementById('p2dough').value||0.01;
+  const l1=+document.getElementById('p1labour').value||1;
+  const l2=+document.getElementById('p2labour').value||1;
+  const maxD=+document.getElementById('maxDough').value||1;
+  const maxL=+document.getElementById('maxLabour').value||1;
+  const maxX1=+document.getElementById('maxX1').value||9999;
+  const maxX2=+document.getElementById('maxX2').value||9999;
+  const n1=document.getElementById('p1name').value||'Type 1';
+  const n2=document.getElementById('p2name').value||'Type 2';
+  document.getElementById('lbl1').textContent=n1+' units';
+  document.getElementById('lbl2').textContent=n2+' units';
+
+  // Check corners of feasible region
+  const corners=[
+    [0,0],
+    [Math.min(maxD/d1,maxL/l1,maxX1),0],
+    [0,Math.min(maxD/d2,maxL/l2,maxX2)],
+    // intersection of dough and labour constraints
+    ...getIntersection(d1,d2,maxD,l1,l2,maxL)
+  ];
+
+  let best=null,bestProfit=-Infinity;
+  for(const [x1,x2] of corners){
+    if(x1<-0.001||x2<-0.001) continue;
+    if(d1*x1+d2*x2>maxD+0.001) continue;
+    if(l1*x1+l2*x2>maxL+0.001) continue;
+    if(x1>maxX1+0.001||x2>maxX2+0.001) continue;
+    const profit=p1*x1+p2*x2;
+    if(profit>bestProfit){bestProfit=profit;best=[x1,x2];}
+  }
+
+  if(!best){
+    document.getElementById('feasBox').className='feasibility fail';
+    document.getElementById('feasBox').textContent='No feasible solution — constraints are too tight.';
+    return;
+  }
+
+  const [ox1,ox2]=best;
+  const totalL=l1*ox1+l2*ox2;
+  document.getElementById('optX1').textContent=Math.round(ox1);
+  document.getElementById('optX2').textContent=Math.round(ox2);
+  document.getElementById('optProfit').textContent='$'+Math.round(bestProfit);
+  document.getElementById('labourUsed').textContent=Math.round(totalL/maxL*100)+'%';
+
+  const binding=[];
+  if(Math.abs(d1*ox1+d2*ox2-maxD)<1) binding.push('dough');
+  if(Math.abs(l1*ox1+l2*ox2-maxL)<1) binding.push('labour');
+  const box=document.getElementById('feasBox');
+  box.className='feasibility ok';
+  box.textContent=`Optimal: ${Math.round(ox1)} ${n1} + ${Math.round(ox2)} ${n2} = $${Math.round(bestProfit)} profit. Binding constraint${binding.length>1?'s':''}: ${binding.length?binding.join(' & '):'none (demand cap binding)'}.`;
+
+  updateChart(ox1,ox2,maxX1,maxX2,p1,p2,n1,n2);
+}
+
+function getIntersection(d1,d2,D,l1,l2,L){
+  const det=d1*l2-d2*l1;
+  if(Math.abs(det)<0.0001) return [];
+  const x1=(D*l2-d2*L)/det;
+  const x2=(d1*L-D*l1)/det;
+  return [[x1,x2]];
+}
+
+function updateChart(ox1,ox2,mX1,mX2,p1,p2,n1,n2){
+  const steps=20;const data=[];
+  for(let i=0;i<=steps;i++){
+    const x1=Math.min(ox1*2,mX1)*i/steps;
+    for(let j=0;j<=steps;j++){
+      const x2=Math.min(ox2*2,mX2)*j/steps;
+      data.push({x:x1,y:p1*x1+p2*x2,r:3});
+    }
+  }
+  if(profitChart) profitChart.destroy();
+  profitChart=new Chart(document.getElementById('profitChart'),{
+    type:'bubble',
+    data:{datasets:[
+      {label:'Production combos',data:data,backgroundColor:'rgba(184,149,42,0.12)',borderColor:'rgba(184,149,42,0.3)',borderWidth:0.5},
+      {label:'Optimal point',data:[{x:ox1,y:p1*ox1+p2*ox2,r:10}],backgroundColor:'rgba(122,94,10,0.8)',borderColor:0,borderWidth:0}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10}}},scales:{x:{title:{display:true,text:`${n1} units (x₁)`,font:{size:11}},grid:{color:'rgba(184,149,42,0.06)'},min:0},y:{title:{display:true,text:'Total profit ($)',font:{size:11}},grid:{color:'rgba(184,149,42,0.06)'},min:0}}}
+  });
+}
+
+solve();
+</script>
+</body>
+</html>

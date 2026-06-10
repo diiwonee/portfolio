@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 3: Comparative Advantage — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#1b5e20;--green-mid:#2e7d32;--green-light:#c8e6c9;--green-pale:#e8f5e9;--gold:#b8952a;--cream:#faf8f4;--mist:#f1f8e9;--text-muted:#4a5568;--blue:#1a3a5c;--ink:#1a2510}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(27,94,32,0.15)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--green);text-decoration:none}
+.nav-back{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.nav-back:hover{color:var(--green)}
+
+.hero{min-height:50vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(160deg,#071508 0%,#0f2a12 40%,#1b5e20 80%,#2e7d32 100%);position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:50px 50px}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(200,230,200,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(200,230,200,0.5);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#e8f5e9;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:#a5d6a7}
+.hero-sub{font-size:0.88rem;color:rgba(200,230,200,0.55);font-weight:300;line-height:1.6}
+
+main{max-width:920px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(27,94,32,0.15)}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--green-light)}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--green)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* MODEL TABS */
+.model-tabs{display:flex;gap:0.5rem;margin-bottom:2rem}
+.tab-btn{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:100px;border:0.5px solid rgba(27,94,32,0.25);background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.model-panel{display:none}
+.model-panel.active{display:block}
+
+/* COMPARISON TABLE */
+.compare-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.83rem}
+.compare-table th{text-align:left;padding:0.8rem 1rem;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);border-bottom:0.5px solid rgba(27,94,32,0.15);font-weight:400;background:var(--mist)}
+.compare-table td{padding:0.75rem 1rem;border-bottom:0.5px solid rgba(27,94,32,0.07);color:var(--ink);vertical-align:top}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table .col-ric{color:var(--green);font-weight:500}
+.compare-table .col-ho{color:var(--blue);font-weight:500}
+.compare-table .row-head td:first-child{font-weight:500;color:var(--ink)}
+
+/* INTERACTIVE CALCULATOR */
+.calc-box{background:#fff;border:0.5px solid rgba(27,94,32,0.12);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.calc-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--green);margin-bottom:0.4rem}
+.calc-box .desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.country-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.country-block{background:var(--mist);border-radius:10px;padding:1.2rem}
+.country-block h4{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--green);margin-bottom:1rem;font-weight:500}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem}
+.input-group label{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.3rem}
+.input-group input{width:100%;padding:0.4rem 0.6rem;border:0.5px solid rgba(27,94,32,0.2);border-radius:6px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--ink);background:#fff}
+.result-section{border-top:0.5px solid rgba(27,94,32,0.1);padding-top:1.5rem;margin-top:0.5rem}
+.result-section h4{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--green);margin-bottom:1rem}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem}
+.result-stat{text-align:center;background:var(--mist);border-radius:8px;padding:0.75rem}
+.result-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--green);font-weight:300}
+.result-stat .lbl{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem}
+.verdict{margin-top:1rem;padding:0.8rem 1rem;border-radius:8px;font-size:0.83rem;line-height:1.6}
+.verdict.trade{background:#e8f5e9;color:var(--green)}
+.verdict.no-trade{background:#fff3e0;color:#e65100}
+
+/* PPF CHART */
+.chart-box{background:#fff;border:0.5px solid rgba(27,94,32,0.1);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.chart-title{font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.chart-wrap{position:relative;height:220px}
+
+/* LEARN BOX */
+.learn-box{border:0.5px solid rgba(27,94,32,0.12);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(27,94,32,0.08)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(27,94,32,0.04);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--green-mid);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(27,94,32,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--green)}
+@media(max-width:620px){.country-grid,.result-grid,.chart-row{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← International Trade</a>
+  <a href="../index.html" class="nav-back">Home</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-num">03</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">International Trade · Project 03</div>
+    <h1>Comparative Advantage<br>&amp; <em>Trade Models</em></h1>
+    <p class="hero-sub">Ricardian vs Heckscher-Ohlin: two explanations for why countries trade — and an interactive way to test them both.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2>Project Overview</h2></div>
+    <p>This project covers two major trade models studied in class: the <strong>Ricardian model</strong> (trade based on labour productivity differences) and the <strong>Heckscher-Ohlin model</strong> (trade based on factor endowments — land, labour, capital). Both models answer the question: <em>why do countries trade?</em> — but they give fundamentally different answers.</p>
+    <p>The activity involved a comparative advantage spreadsheet exercise and reading chapters on both models. This page brings those concepts to life with an interactive calculator and PPF visualiser.</p>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2>Interactive Demonstration</h2></div>
+    <div class="model-tabs">
+      <button class="tab-btn active" onclick="showPanel('compare')">Model Comparison</button>
+      <button class="tab-btn" onclick="showPanel('calc')">Trade Calculator</button>
+      <button class="tab-btn" onclick="showPanel('ppf')">PPF Explorer</button>
+    </div>
+
+    <!-- COMPARISON -->
+    <div class="model-panel active" id="panel-compare">
+      <table class="compare-table">
+        <thead><tr><th>Dimension</th><th class="col-ric">Ricardian Model</th><th class="col-ho">Heckscher-Ohlin Model</th></tr></thead>
+        <tbody>
+          <tr class="row-head"><td>Core idea</td><td>Countries trade based on <strong>labour productivity differences</strong></td><td>Countries trade based on <strong>factor endowments</strong> (land, labour, capital)</td></tr>
+          <tr><td>Key assumption</td><td>Only one factor of production: labour. Technology differs between countries.</td><td>Technology is the same everywhere. Countries differ in their relative factor abundance.</td></tr>
+          <tr><td>What determines comparative advantage?</td><td>Relative labour productivity — which country is <em>relatively</em> more efficient?</td><td>Factor abundance — labour-rich countries export labour-intensive goods; capital-rich countries export capital-intensive goods.</td></tr>
+          <tr><td>Predictive power</td><td>Good at explaining trade patterns in simple cases; less accurate with many goods and factors.</td><td>More realistic structure; but the Leontief Paradox showed the US exported labour-intensive goods despite being capital-rich.</td></tr>
+          <tr><td>Factor price equalisation</td><td>Not explicitly modelled.</td><td>Predicts trade will equalise wages globally over time. In practice, this rarely fully occurs due to transport costs, barriers, and skill differences.</td></tr>
+          <tr><td>Real-world example</td><td>Bangladesh vs UK in textiles: Bangladesh has lower wages, higher relative efficiency in clothing → exports clothing.</td><td>Saudi Arabia exports oil (land/resource-abundant); Germany exports machinery (capital-abundant).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="model-panel" id="panel-calc">
+      <div class="calc-box">
+        <h3>Ricardian Comparative Advantage Calculator</h3>
+        <p class="desc">Enter hours of labour required to produce 1 unit of each good in each country. The calculator will find each country's comparative advantage and show the gains from trade.</p>
+        <div class="country-grid">
+          <div class="country-block">
+            <h4>Country A</h4>
+            <div class="input-row">
+              <div class="input-group"><label>Hours for Cloth</label><input type="number" id="aCloth" value="2" min="1" max="100" oninput="calcCA()"></div>
+              <div class="input-group"><label>Hours for Wine</label><input type="number" id="aWine" value="4" min="1" max="100" oninput="calcCA()"></div>
+            </div>
+          </div>
+          <div class="country-block">
+            <h4>Country B</h4>
+            <div class="input-row">
+              <div class="input-group"><label>Hours for Cloth</label><input type="number" id="bCloth" value="3" min="1" max="100" oninput="calcCA()"></div>
+              <div class="input-group"><label>Hours for Wine</label><input type="number" id="bWine" value="3" min="1" max="100" oninput="calcCA()"></div>
+            </div>
+          </div>
+        </div>
+        <div class="result-section">
+          <h4>Results</h4>
+          <div class="result-grid">
+            <div class="result-stat"><div class="val" id="aOCcloth">-</div><div class="lbl">A: Opp. cost of cloth</div></div>
+            <div class="result-stat"><div class="val" id="aOCwine">-</div><div class="lbl">A: Opp. cost of wine</div></div>
+            <div class="result-stat"><div class="val" id="bOCcloth">-</div><div class="lbl">B: Opp. cost of cloth</div></div>
+            <div class="result-stat"><div class="val" id="bOCwine">-</div><div class="lbl">B: Opp. cost of wine</div></div>
+          </div>
+          <div class="verdict" id="verdictBox">-</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PPF -->
+    <div class="model-panel" id="panel-ppf">
+      <p>The Production Possibility Frontier (PPF) shows the maximum combination of two goods a country can produce with its resources. Points on the line are efficient; inside = inefficient; outside = impossible without trade.</p>
+      <div class="chart-row">
+        <div class="chart-box">
+          <div class="chart-title">Country A — PPF (Cloth vs Wine)</div>
+          <div class="chart-wrap"><canvas id="ppfA"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Country B — PPF (Cloth vs Wine)</div>
+          <div class="chart-wrap"><canvas id="ppfB"></canvas></div>
+        </div>
+      </div>
+      <div class="calc-box" style="margin-top:0.5rem">
+        <h3>Adjust Labour Endowment</h3>
+        <p class="desc">Drag the slider to change total labour hours available in each country and see how the PPF shifts.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div>
+            <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.4rem">Country A labour hours: <strong id="aLabourVal">100</strong></label>
+            <input type="range" id="aLabour" min="50" max="300" value="100" oninput="updatePPF()">
+          </div>
+          <div>
+            <label style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.4rem">Country B labour hours: <strong id="bLabourVal">90</strong></label>
+            <input type="range" id="bLabour" min="50" max="300" value="90" oninput="updatePPF()">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2>Evidence from Coursework</h2></div>
+    <p>This project draws from the comparative advantage spreadsheet activity (class exercise) and Readings 2 and 3 (Chapters 3–5 of the textbook). Key guiding questions addressed:</p>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">GQ 1</div><div class="learn-val"><strong>How does H-O differ from Ricardian?</strong> The Ricardian model assumes only labour matters and that technology differs. H-O assumes technology is identical across countries but factor endowments differ — the ratio of capital to labour, or land to labour, determines what a country exports.</div></div>
+      <div class="learn-row"><div class="learn-key">GQ 2</div><div class="learn-val"><strong>Factor price equalisation.</strong> H-O predicts that as countries trade, wages and capital returns converge globally. In practice, this doesn't fully happen: transport costs, trade barriers, and non-tradeable services prevent full equalisation. Highly skilled vs. unskilled labour may face different dynamics.</div></div>
+      <div class="learn-row"><div class="learn-key">GQ 3</div><div class="learn-val"><strong>How can a weak economy trade with a superpower?</strong> Comparative advantage shows that even if Country A is worse at producing everything, it still has a relative advantage in the good where its disadvantage is smallest. Trade benefits both. Total output increases. This was Ricardo's counterintuitive, powerful insight.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">The difference between absolute and comparative advantage. The Ricardian model's elegant but oversimplified logic. H-O's more realistic but harder-to-test framework. Factor price equalisation as theory vs. reality.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Spreadsheet modelling, opportunity cost calculations, drawing and interpreting PPF diagrams, reading economic research papers and extracting key arguments.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">The most surprising thing: comparative advantage feels impossible until you do the math. The idea that a less productive country should <em>still</em> trade — and that both sides gain — seems wrong intuitively. The model reveals something real that instinct misses. That's what makes it valuable.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="p2-autarky.html">← Project 02</a>
+    <a href="p4-middleman.html">Project 04 →</a>
+  </div>
+</main>
+
+<script>
+function showPanel(name){
+  document.querySelectorAll('.model-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function calcCA(){
+  const ac=+document.getElementById('aCloth').value||1;
+  const aw=+document.getElementById('aWine').value||1;
+  const bc=+document.getElementById('bCloth').value||1;
+  const bw=+document.getElementById('bWine').value||1;
+  const aOCc=(aw/ac).toFixed(2);
+  const aOCw=(ac/aw).toFixed(2);
+  const bOCc=(bw/bc).toFixed(2);
+  const bOCw=(bc/bw).toFixed(2);
+  document.getElementById('aOCcloth').textContent=aOCc+' wine';
+  document.getElementById('aOCwine').textContent=aOCw+' cloth';
+  document.getElementById('bOCcloth').textContent=bOCc+' wine';
+  document.getElementById('bOCwine').textContent=bOCw+' cloth';
+  const vbox=document.getElementById('verdictBox');
+  if(parseFloat(aOCc)===parseFloat(bOCc)){
+    vbox.className='verdict no-trade';
+    vbox.textContent='No comparative advantage — opportunity costs are identical. Trade is technically possible but offers no gain.';
+  } else if(parseFloat(aOCc)<parseFloat(bOCc)){
+    vbox.className='verdict trade';
+    vbox.textContent=`Country A should specialise in Cloth (lower opportunity cost: ${aOCc} wine). Country B should specialise in Wine (lower opportunity cost: ${bOCw} cloth). Both gain from trade.`;
+  } else {
+    vbox.className='verdict trade';
+    vbox.textContent=`Country B should specialise in Cloth (lower opportunity cost: ${bOCc} wine). Country A should specialise in Wine (lower opportunity cost: ${aOCw} cloth). Both gain from trade.`;
+  }
+}
+calcCA();
+
+// PPF CHARTS
+let ppfChartA, ppfChartB;
+function makePPFdata(labour,hrsCloth,hrsWine){
+  const maxCloth=labour/hrsCloth;
+  const maxWine=labour/hrsWine;
+  return {labels:['Max Cloth','Max Wine'],ppf:[{x:maxCloth,y:0},{x:0,y:maxWine}]};
+}
+function initPPF(){
+  const ppfCfg=(id,labour,hrsCloth,hrsWine,label)=>{
+    const d=makePPFdata(labour,hrsCloth,hrsWine);
+    return new Chart(document.getElementById(id),{type:'scatter',data:{datasets:[{label,data:d.ppf,borderColor:'#2e7d32',backgroundColor:'rgba(46,125,50,0.08)',showLine:true,fill:true,pointRadius:5,pointBackgroundColor:'#2e7d32',tension:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'Cloth (units)',font:{size:11}},grid:{color:'rgba(27,94,32,0.06)'},min:0},y:{title:{display:true,text:'Wine (units)',font:{size:11}},grid:{color:'rgba(27,94,32,0.06)'},min:0}}}});
+  };
+  ppfChartA=ppfCfg('ppfA',100,2,4,'Country A');
+  ppfChartB=ppfCfg('ppfB',90,3,3,'Country B');
+}
+function updatePPF(){
+  const al=+document.getElementById('aLabour').value;
+  const bl=+document.getElementById('bLabour').value;
+  document.getElementById('aLabourVal').textContent=al;
+  document.getElementById('bLabourVal').textContent=bl;
+  const ppfA=makePPFdata(al,2,4);
+  const ppfB=makePPFdata(bl,3,3);
+  ppfChartA.data.datasets[0].data=ppfA.ppf;
+  ppfChartA.update();
+  ppfChartB.data.datasets[0].data=ppfB.ppf;
+  ppfChartB.update();
+}
+initPPF();
+</script>
+</body>
+</html>

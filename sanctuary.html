@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sanctuary — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --forest:#1a3a2e;--forest-mid:#2d6b50;--forest-light:#a8d5b5;--forest-pale:#e8f5ee;
+  --earth:#3d2b1a;--earth-light:#c4956a;--gold:#d4a820;
+  --sky:#0d1f35;--cream:#f5f9f6;--ink:#0d1f15;--muted:#4a6555;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(245,249,246,0.9);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(26,58,46,0.12)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--forest);text-decoration:none}
+.nav-back{font-size:0.74rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.nav-back:hover{color:var(--forest)}
+
+/* INTRO */
+.intro{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6rem 2rem 4rem;background:linear-gradient(170deg,#050e08 0%,#0d2018 30%,#1a3a2e 60%,#2d6b50 90%);position:relative;overflow:hidden}
+.stars{position:absolute;inset:0;pointer-events:none}
+.intro-eyebrow{font-size:0.68rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(168,213,181,0.45);margin-bottom:1.5rem}
+.intro h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,6rem);font-weight:300;color:#e8f5ee;line-height:1.05;margin-bottom:1rem}
+.intro h1 em{font-style:italic;color:var(--forest-light)}
+.intro-sub{font-size:0.9rem;color:rgba(168,213,181,0.6);max-width:520px;line-height:1.8;margin:0 auto 2.5rem;font-weight:300}
+.begin-btn{padding:0.85rem 2.2rem;background:rgba(168,213,181,0.12);border:0.5px solid rgba(168,213,181,0.35);border-radius:100px;color:#e8f5ee;font-size:0.82rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.3s}
+.begin-btn:hover{background:rgba(168,213,181,0.2);border-color:rgba(168,213,181,0.6)}
+
+/* READING SECTION */
+.reading-section{display:none;max-width:720px;margin:0 auto;padding:5rem 2rem 3rem}
+.reading-card{background:#fff;border:0.5px solid rgba(26,58,46,0.12);border-radius:16px;padding:2.5rem;margin-bottom:2rem;position:relative;overflow:hidden}
+.reading-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--forest),var(--forest-mid))}
+.reading-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--forest-mid);margin-bottom:1rem}
+.reading-card p{font-family:'Cormorant Garamond',serif;font-size:1.08rem;line-height:2;color:var(--ink)}
+.reading-card p em{font-style:italic;color:var(--forest)}
+.continue-btn{display:block;margin:1rem auto 0;padding:0.65rem 1.8rem;background:var(--forest);color:#fff;border:none;border-radius:100px;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s}
+.continue-btn:hover{background:var(--forest-mid)}
+
+/* QUESTIONS */
+.questions-section{display:none;max-width:720px;margin:0 auto;padding:4rem 2rem 6rem}
+.q-header{text-align:center;margin-bottom:3rem}
+.q-header h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--forest);margin-bottom:0.5rem}
+.q-header p{font-size:0.85rem;color:var(--muted);line-height:1.7}
+.question-card{background:#fff;border:0.5px solid rgba(26,58,46,0.1);border-radius:14px;padding:1.8rem;margin-bottom:1.2rem;transition:all 0.2s;position:relative}
+.question-card.active{border-color:var(--forest);box-shadow:0 4px 20px rgba(26,58,46,0.08)}
+.question-card.done{border-color:var(--forest-light);background:var(--forest-pale)}
+.q-num{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--forest-mid);margin-bottom:0.5rem}
+.q-text{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ink);margin-bottom:1rem;line-height:1.4}
+.q-input{width:100%;min-height:80px;padding:0.75rem 1rem;border:0.5px solid rgba(26,58,46,0.15);border-radius:8px;font-size:0.85rem;font-family:'DM Sans',sans-serif;color:var(--ink);resize:vertical;background:#fafdf9;line-height:1.6;transition:border-color 0.2s}
+.q-input:focus{outline:none;border-color:var(--forest-mid)}
+.q-input::placeholder{color:rgba(74,101,85,0.45);font-style:italic}
+.q-save{margin-top:0.6rem;font-size:0.72rem;padding:0.4rem 1rem;border-radius:100px;border:0.5px solid rgba(26,58,46,0.2);background:transparent;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+.q-save:hover{background:var(--forest);color:#fff;border-color:var(--forest)}
+.q-saved-badge{display:none;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--forest-mid);margin-left:0.75rem}
+.progress-bar-wrap{background:rgba(26,58,46,0.08);border-radius:100px;height:4px;margin-bottom:2.5rem}
+.progress-bar{height:4px;border-radius:100px;background:linear-gradient(90deg,var(--forest),var(--forest-mid));transition:width 0.4s ease}
+.submit-btn{display:block;width:100%;padding:1rem;background:var(--forest);color:#fff;border:none;border-radius:10px;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:2rem;transition:background 0.2s}
+.submit-btn:hover{background:var(--forest-mid)}
+.submit-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ENDING */
+.ending{display:none;min-height:100vh;position:relative;overflow:hidden}
+.ending-bg{position:absolute;inset:0;background:linear-gradient(170deg,#050e08 0%,#0d2018 25%,#1a3a2e 55%,#2d6b50 80%,#3d9970 100%)}
+.ending-content{position:relative;max-width:680px;margin:0 auto;padding:8rem 2rem 5rem;text-align:center}
+.ending-icon{font-size:4rem;margin-bottom:2rem;display:block}
+.ending h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:300;color:#e8f5ee;line-height:1.1;margin-bottom:1rem}
+.ending h2 em{font-style:italic;color:var(--forest-light)}
+.ending p{font-size:0.9rem;color:rgba(168,213,181,0.65);line-height:1.8;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto}
+.answers-summary{background:rgba(255,255,255,0.06);border:0.5px solid rgba(168,213,181,0.2);border-radius:14px;padding:2rem;margin:2rem auto;text-align:left;max-width:580px}
+.answers-summary h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#e8f5ee;margin-bottom:1.2rem;text-align:center}
+.answer-item{margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:0.5px solid rgba(168,213,181,0.1)}
+.answer-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.answer-q{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(168,213,181,0.45);margin-bottom:0.35rem}
+.answer-a{font-family:'Cormorant Garamond',serif;font-size:0.98rem;color:rgba(232,245,238,0.8);line-height:1.6;font-style:italic}
+.restart-btn{padding:0.75rem 2rem;background:rgba(168,213,181,0.12);border:0.5px solid rgba(168,213,181,0.3);border-radius:100px;color:#e8f5ee;font-size:0.78rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:1rem;transition:all 0.3s}
+.restart-btn:hover{background:rgba(168,213,181,0.2)}
+
+/* FLOATING PARTICLES */
+.particle{position:absolute;border-radius:50%;background:rgba(168,213,181,0.15);animation:float linear infinite;pointer-events:none}
+@keyframes float{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:0.5}100%{transform:translateY(-100px) scale(1);opacity:0}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-brand">← Home</a>
+  <span class="nav-back">International Trade Portfolio</span>
+</nav>
+
+<!-- INTRO -->
+<section class="intro" id="introSection">
+  <div class="stars" id="stars"></div>
+  <div class="intro-eyebrow">An Imagination Exercise</div>
+  <h1>The<br><em>Sanctuary</em></h1>
+  <p class="intro-sub">You will not need paper, pencil, or any other materials. Not now, not later. You will be creating a place of solitude using only your imagination.</p>
+  <button class="begin-btn" onclick="startReading()">Begin the exercise →</button>
+</section>
+
+<!-- READING -->
+<section class="reading-section" id="readingSection">
+  <div id="readingCards"></div>
+</section>
+
+<!-- QUESTIONS -->
+<section class="questions-section" id="questionsSection">
+  <div class="q-header">
+    <h2>Your Sanctuary</h2>
+    <p>Answer each question at your own pace. Your answers are recorded and shown to you at the end. Take your time — there is no rush.</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div id="questionsContainer"></div>
+  <button class="submit-btn" id="submitBtn" onclick="showEnding()">Complete my Sanctuary →</button>
+</section>
+
+<!-- ENDING -->
+<section class="ending" id="endingSection">
+  <div class="ending-bg"></div>
+  <div id="particles"></div>
+  <div class="ending-content">
+    <span class="ending-icon">☽</span>
+    <h2>Your Sanctuary<br><em>is complete</em></h2>
+    <p>You have built something that exists only for you — a place without shadow, without noise, without demand. Return to it whenever you need stillness.</p>
+    <div class="answers-summary" id="answersSummary"></div>
+    <button class="restart-btn" onclick="restart()">↺ Begin again</button>
+  </div>
+</section>
+
+<script>
+const readings=[
+  {label:"Step 1 — The Space",text:`To begin, imagine you are in a wide open space outside. A place within nature. A pleasant place. It could be a field of grass with rolling hills in the distance. Maybe a clearing in a forest you once visited as a child. Or even a wide sunny beach on a deserted island surrounded by an endless ocean of rolling waves.
+
+Place yourself there with the sun high above you. <em>Your shadow is the only thing that accompanies you.</em> You and your shadow stand in the blank slate where you will build a shelter.
+
+Can you see where you are? If not, do not continue until you are satisfied with your Space.`},
+  {label:"Step 2 — The Sanctuary",text:`Now, pick a spot and conjure your shelter from the emptiness around you. This will become your Sanctuary. It may be of any size, shape, or complexity — a small single room cottage, a castle with a hundred rooms, a treehouse in the only tree nearby, or even a tethered hot air balloon.
+
+Start to imagine the details as you view it from the outside. What is it made of? Which direction does the entrance face? If you turn in that direction, what do you see? How do you enter?`},
+  {label:"Step 3 — The Shadow",text:`But, before you enter, <em>you must enter alone.</em> You must leave your shadow behind.
+
+Create an anchor for your shadow. Stand next to your anchor. Reach down and pluck your shadow from your feet and attach it to this anchor. Say goodbye to your shadow for the time being.
+
+Now you are ready to enter your Sanctuary.
+
+Try to feel the weight of your door as you open it, the texture of the rope ladder to your treehouse, or the damp walls that lead you down into the earth. However you enter — imagine the feel of it.`},
+  {label:"Step 4 — The Objects",text:`Once you are inside your Sanctuary you can begin to see the details more clearly, because most likely before this moment you have already decided on a few things. Those details will shift and solidify eventually.
+
+The layout and things that populate the space or room you have just entered will slowly take form. Once you can see it clearly, then you may begin to <em>create your Objects.</em>
+
+You need to decide what these Objects are and where they will go. Standing in your Sanctuary you will conjure these Objects into being and place them where they belong. It may be best to let the first thing that comes to your mind be the current Object, even if you don't like what it is.
+
+Do this until you have at least 10 Objects. You will not forget them.`},
+  {label:"Step 5 — Return",text:`Step back from your creations, once finished, and observe them where you put them. Try to hone in on the details of each Object. Now observe your sanctuary as a whole.
+
+Turn towards the exit and walk out. Retrieve your shadow and come back to this reality.
+
+<em>This process must be completed at each step to be successful.</em> Once finished, you will find that you want to go back to your Sanctuary — to explore, to look at your Objects, to remember them, to detail them further, to build your world.
+
+Now — answer the questions below.`}
+];
+
+const questions=[
+  {text:"Describe your Space. Where are you? What does it look and feel like?",placeholder:"A sunny meadow at the edge of a pine forest, the grass warm underfoot..."},
+  {text:"What is your Sanctuary? Describe it from the outside — its size, shape, materials, entrance.",placeholder:"A small stone cottage half-covered in ivy, with a heavy wooden door facing east..."},
+  {text:"What anchor did you choose for your shadow, and what does it look like?",placeholder:"An old iron fence post driven into the soft earth..."},
+  {text:"List your 10 (or more) Objects and where you placed each one.",placeholder:"1. A brass telescope by the window...\n2. A worn armchair in the corner..."},
+  {text:"What does the Space represent to you?",placeholder:"It feels like stillness — the opposite of every room I usually inhabit..."},
+  {text:"What does your shadow represent?",placeholder:"Everything I carry that I can't leave behind in ordinary life..."},
+  {text:"What is the purpose of the Objects in your Sanctuary?",placeholder:"They are anchors for memory — each one belongs to a version of me..."},
+  {text:"How does this exercise link to note-taking?",placeholder:"The Sanctuary is like a mental filing system — each object is a stored idea..."},
+  {text:"Which of the 5 Cs does this link to, and how?",placeholder:"Connection — the objects connect different thoughts in a non-linear way..."},
+  {text:"What does your Sanctuary say about you?",placeholder:"That I need solitude more than I admit, and that beauty matters to me..."},
+  {text:"What is world-building, and why have humans always done it?",placeholder:"World-building is the act of making inner experience external — giving shape to what lives in the imagination..."},
+];
+
+let answers=new Array(questions.length).fill('');
+let readingIdx=0;
+
+function startReading(){
+  document.getElementById('introSection').style.display='none';
+  document.getElementById('readingSection').style.display='block';
+  document.getElementById('readingSection').scrollIntoView({behavior:'smooth'});
+  renderReadingCards();
+}
+
+function renderReadingCards(){
+  const container=document.getElementById('readingCards');
+  container.innerHTML='';
+  readings.forEach((r,i)=>{
+    const card=document.createElement('div');
+    card.className='reading-card';
+    card.id='rcard'+i;
+    if(i>0) card.style.display='none';
+    card.innerHTML=`<div class="reading-label">${r.label}</div><p>${r.text.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>')}</p>
+      <button class="continue-btn" onclick="nextReading(${i})">${i<readings.length-1?'Continue →':'Begin the questions →'}</button>`;
+    container.appendChild(card);
+  });
+}
+
+function nextReading(i){
+  document.getElementById('rcard'+i).style.display='none';
+  if(i<readings.length-1){
+    document.getElementById('rcard'+(i+1)).style.display='block';
+    document.getElementById('rcard'+(i+1)).scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    document.getElementById('readingSection').style.display='none';
+    document.getElementById('questionsSection').style.display='block';
+    document.getElementById('questionsSection').scrollIntoView({behavior:'smooth'});
+    renderQuestions();
+  }
+}
+
+function renderQuestions(){
+  const container=document.getElementById('questionsContainer');
+  container.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='question-card'+(i===0?' active':'');
+    card.id='qcard'+i;
+    card.innerHTML=`
+      <div class="q-num">Question ${i+1} of ${questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      <textarea class="q-input" id="qinput${i}" placeholder="${q.placeholder}" oninput="saveAnswer(${i})">${answers[i]}</textarea>
+      <div style="display:flex;align-items:center;margin-top:0.5rem">
+        <button class="q-save" onclick="markDone(${i})">Save answer</button>
+        <span class="q-saved-badge" id="badge${i}">✓ Saved</span>
+      </div>`;
+    container.appendChild(card);
+  });
+  updateProgress();
+}
+
+function saveAnswer(i){
+  answers[i]=document.getElementById('qinput'+i).value;
+  updateProgress();
+}
+
+function markDone(i){
+  saveAnswer(i);
+  if(!answers[i].trim()) return;
+  document.getElementById('qcard'+i).classList.add('done');
+  document.getElementById('qcard'+i).classList.remove('active');
+  document.getElementById('badge'+i).style.display='inline';
+  if(i<questions.length-1){
+    document.getElementById('qcard'+(i+1)).classList.add('active');
+    document.getElementById('qcard'+(i+1)).scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  updateProgress();
+}
+
+function updateProgress(){
+  const filled=answers.filter(a=>a.trim()).length;
+  document.getElementById('progressBar').style.width=(filled/questions.length*100)+'%';
+  document.getElementById('submitBtn').disabled=filled<3;
+}
+
+function showEnding(){
+  document.getElementById('questionsSection').style.display='none';
+  document.getElementById('endingSection').style.display='block';
+  document.getElementById('endingSection').scrollIntoView({behavior:'smooth'});
+
+  // Build answers summary
+  const summary=document.getElementById('answersSummary');
+  const filled=questions.map((q,i)=>({q:q.text,a:answers[i]})).filter(x=>x.a.trim());
+  summary.innerHTML=`<h3>Your Sanctuary</h3>`+filled.map(x=>`<div class="answer-item"><div class="answer-q">${x.q}</div><div class="answer-a">${x.a}</div></div>`).join('');
+
+  // Particles
+  const pc=document.getElementById('particles');
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const size=Math.random()*8+4;
+    p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*6}s`;
+    pc.appendChild(p);
+  }
+}
+
+function restart(){
+  answers=new Array(questions.length).fill('');
+  document.getElementById('endingSection').style.display='none';
+  document.getElementById('introSection').style.display='flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Starfield
+function makeStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');
+    const sz=Math.random()*2+0.5;
+    s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:rgba(255,255,255,${Math.random()*0.5+0.1});left:${Math.random()*100}%;top:${Math.random()*100}%;animation:twinkle ${Math.random()*4+3}s ease-in-out infinite ${Math.random()*4}s alternate`;
+    c.appendChild(s);
+  }
+}
+const style=document.createElement('style');
+style.textContent='@keyframes twinkle{0%{opacity:0.1}100%{opacity:0.8}}';
+document.head.appendChild(style);
+makeStars();
+</script>
+</body>
+</html>

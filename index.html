@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diana Abysheva — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1117;
+  --mist:#f4f2ed;
+  --blue:#1a3a5c;
+  --blue-mid:#2e5f8a;
+  --blue-light:#c8ddf0;
+  --blue-pale:#eaf2fa;
+  --gold:#b8952a;
+  --gold-light:#f5e9c0;
+  --cream:#faf8f4;
+  --text-muted:#6b7280;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.2rem 3rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,244,0.85);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(26,58,92,0.12)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:0.08em;color:var(--blue);font-weight:400}
+.nav-links{display:flex;gap:2rem}
+.nav-links a{font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--blue)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden;background:linear-gradient(165deg,#0d1f35 0%,#1a3a5c 40%,#2e5f8a 75%,#4a85b5 100%)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,rgba(74,133,181,0.25) 0%,transparent 70%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero-eyebrow{font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(200,221,240,0.7);margin-bottom:1.5rem;font-family:'DM Sans',sans-serif;font-weight:300}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,8vw,6.5rem);font-weight:300;color:#fff;line-height:1.05;letter-spacing:-0.01em;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:#c8ddf0}
+.hero-sub{font-size:0.95rem;color:rgba(200,221,240,0.75);max-width:480px;line-height:1.7;margin:0 auto 3rem;font-weight:300}
+.hero-badge{display:inline-flex;gap:1.5rem;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.15);border-radius:100px;padding:0.6rem 1.5rem;margin-bottom:4rem}
+.hero-badge span{font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,221,240,0.8)}
+.hero-badge span+span{border-left:0.5px solid rgba(255,255,255,0.2);padding-left:1.5rem}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem}
+.scroll-hint span{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(200,221,240,0.4)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(200,221,240,0.4),transparent);animation:scrollpulse 2s ease-in-out infinite}
+@keyframes scrollpulse{0%,100%{opacity:0.4;transform:scaleY(1)}50%{opacity:1;transform:scaleY(0.6)}}
+
+/* COURSE CHOOSER */
+.chooser{padding:6rem 2rem;background:var(--cream)}
+.section-label{font-size:0.7rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center}
+.chooser h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:300;text-align:center;color:var(--blue);margin-bottom:0.75rem}
+.chooser p{text-align:center;color:var(--text-muted);max-width:480px;margin:0 auto 3.5rem;line-height:1.7;font-size:0.9rem}
+.course-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:860px;margin:0 auto}
+.course-card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;text-decoration:none;display:block;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+.course-card:hover{transform:translateY(-6px)}
+.course-card-inner{padding:2.5rem 2rem;height:340px;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.course-card.trade .course-card-inner{background:linear-gradient(150deg,#0d2640 0%,#1a4a72 50%,#2e6da4 100%)}
+.course-card.mgmt .course-card-inner{background:linear-gradient(150deg,#1a1a0d 0%,#3d3510 50%,#6b5a1c 100%)}
+.card-deco{position:absolute;top:1.5rem;right:1.5rem;font-size:3rem;opacity:0.15;font-family:'Cormorant Garamond',serif;color:#fff;line-height:1}
+.card-num{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:1rem}
+.course-card h3{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;color:#fff;line-height:1.15;margin-bottom:0.75rem}
+.course-card p{font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.65;margin-bottom:1.5rem;font-weight:300}
+.card-cta{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.85);border:0.5px solid rgba(255,255,255,0.3);border-radius:100px;padding:0.5rem 1.2rem;transition:all 0.2s}
+.course-card:hover .card-cta{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.5)}
+.card-arrow{transition:transform 0.2s}
+.course-card:hover .card-arrow{transform:translateX(4px)}
+
+/* EXTRAS */
+.extras{padding:5rem 2rem;background:var(--mist);border-top:0.5px solid rgba(26,58,92,0.08)}
+.extras h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:300;text-align:center;color:var(--blue);margin-bottom:0.75rem}
+.extras p{text-align:center;color:var(--text-muted);margin-bottom:3rem;font-size:0.9rem}
+.extras-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:760px;margin:0 auto}
+.extra-card{background:#fff;border:0.5px solid rgba(26,58,92,0.1);border-radius:14px;overflow:hidden;text-decoration:none;display:block;transition:all 0.3s;group}
+.extra-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,58,92,0.1)}
+.extra-img{height:160px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.extra-card.sanctuary .extra-img{background:linear-gradient(135deg,#1a3a2e,#2d6b50,#3d9970)}
+.extra-card.books .extra-img{background:linear-gradient(135deg,#2d1a1a,#6b3030,#a05050)}
+.extra-img-text{font-family:'Cormorant Garamond',serif;font-size:4rem;color:rgba(255,255,255,0.25);font-weight:300;font-style:italic;user-select:none}
+.extra-body{padding:1.5rem}
+.extra-body h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--blue);margin-bottom:0.5rem}
+.extra-body p{font-size:0.82rem;color:var(--text-muted);line-height:1.65}
+.extra-tag{display:inline-block;margin-top:1rem;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--gold);border-radius:100px;padding:0.3rem 0.8rem}
+
+/* REFLECTION */
+.reflection{padding:6rem 2rem;background:var(--cream)}
+.reflection-inner{max-width:780px;margin:0 auto}
+.reflection h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--blue);margin-bottom:3rem}
+.refl-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.refl-item{border-left:2px solid var(--blue-light);padding-left:1.5rem}
+.refl-label{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem}
+.refl-item h4{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--blue);margin-bottom:0.5rem}
+.refl-item p{font-size:0.85rem;color:var(--text-muted);line-height:1.7}
+
+/* FOOTER */
+footer{padding:3rem 2rem;border-top:0.5px solid rgba(26,58,92,0.1);display:flex;justify-content:space-between;align-items:center;background:var(--cream)}
+.footer-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--blue);font-weight:300}
+.footer-note{font-size:0.75rem;color:var(--text-muted);letter-spacing:0.05em}
+
+/* INTRO BIO */
+.bio{padding:5rem 2rem;background:#fff;border-top:0.5px solid rgba(26,58,92,0.08)}
+.bio-inner{max-width:720px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.bio-text h2{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:300;color:var(--blue);margin-bottom:1.2rem;line-height:1.2}
+.bio-text p{font-size:0.88rem;color:var(--text-muted);line-height:1.8;margin-bottom:1rem}
+.bio-stats{display:flex;flex-direction:column;gap:1.5rem}
+.stat{border-left:2px solid var(--blue-light);padding-left:1.2rem}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;color:var(--blue);line-height:1}
+.stat-label{font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem}
+
+@media(max-width:600px){
+  .course-cards,.extras-grid,.refl-grid,.bio-inner{grid-template-columns:1fr}
+  nav{padding:1rem 1.5rem}
+  .nav-links{gap:1rem}
+  .nav-links a{font-size:0.7rem}
+  footer{flex-direction:column;gap:1rem;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Diana Abysheva</div>
+  <div class="nav-links">
+    <a href="#courses">Courses</a>
+    <a href="#reflection">Reflection</a>
+    <a href="extras/sanctuary.html">Sanctuary</a>
+    <a href="extras/books.html">Books</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow">Academic Portfolio · 2024–2025</div>
+  <h1>Diana<br><em>Abysheva</em></h1>
+  <p class="hero-sub">Exploring the mechanics of global trade and the science of decision-making — one model at a time.</p>
+  <div class="hero-badge">
+    <span>International Trade</span>
+    <span>Management Science</span>
+  </div>
+  <div class="scroll-hint">
+    <span>Explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<section class="bio" id="about">
+  <div class="bio-inner">
+    <div class="bio-text">
+      <h2>About This Portfolio</h2>
+      <p>This site collects five projects from each course — International Trade and Management Science — along with interactive demonstrations, evidence from class work, and honest reflections on what was learned.</p>
+      <p>Beyond the coursework, you'll also find a creative Sanctuary exercise and some book recommendations worth your time.</p>
+    </div>
+    <div class="bio-stats">
+      <div class="stat">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Projects across 2 courses</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Disciplines explored</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Questions still open</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="chooser" id="courses">
+  <div class="section-label">Choose Your Path</div>
+  <h2>Two Courses, One Portfolio</h2>
+  <p>Select a course below to explore all five projects, interactive demonstrations, and reflections.</p>
+  <div class="course-cards">
+    <a href="int-trade/index.html" class="course-card trade">
+      <div class="course-card-inner">
+        <div class="card-deco">IT</div>
+        <div class="card-num">Course 01</div>
+        <h3>International Trade</h3>
+        <p>Tariffs, gravity models, comparative advantage, and the geopolitics behind global commerce. Kazakhstan's oil, copper, and the world order.</p>
+        <div class="card-cta">Explore projects <span class="card-arrow">→</span></div>
+      </div>
+    </a>
+    <a href="mgmt-science/index.html" class="course-card mgmt">
+      <div class="course-card-inner">
+        <div class="card-deco">MS</div>
+        <div class="card-num">Course 02</div>
+        <h3>Management Science</h3>
+        <p>Linear optimization, decision trees, the traveling salesman — turning messy real-world problems into elegant mathematical models.</p>
+        <div class="card-cta">Explore projects <span class="card-arrow">→</span></div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section class="extras">
+  <div class="section-label">Beyond the Coursework</div>
+  <h2>A Few Other Things</h2>
+  <p>Interactive extras that go beyond the syllabus.</p>
+  <div class="extras-grid">
+    <a href="extras/sanctuary.html" class="extra-card sanctuary">
+      <div class="extra-img"><div class="extra-img-text">☽</div></div>
+      <div class="extra-body">
+        <h3>The Sanctuary</h3>
+        <p>A guided imagination exercise. Build your inner world, answer reflective questions, and receive a peaceful resting place at the end.</p>
+        <div class="extra-tag">Interactive Journey</div>
+      </div>
+    </a>
+    <a href="extras/books.html" class="extra-card books">
+      <div class="extra-img"><div class="extra-img-text">📚</div></div>
+      <div class="extra-body">
+        <h3>Book Recommendations</h3>
+        <p>Two books that shaped how Diana thinks — Martin Eden and The Picture of Dorian Gray. Plus: share your own.</p>
+        <div class="extra-tag">Rate & Recommend</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section class="reflection" id="reflection">
+  <div class="reflection-inner">
+    <div class="section-label">Final Reflection</div>
+    <h2>Looking Back</h2>
+    <div class="refl-grid">
+      <div class="refl-item">
+        <div class="refl-label">Most Interesting</div>
+        <h4>Ridiculous Tariffs</h4>
+        <p>Discovering that Kazakhstan can't negotiate trade deals independently — it needs permission from Russia, Belarus, Armenia, and Kyrgyzstan — was genuinely surprising. Tariffs are rarely just economics.</p>
+      </div>
+      <div class="refl-item">
+        <div class="refl-label">Most Challenging</div>
+        <h4>Linear Optimization</h4>
+        <p>Moving from intuition to formal notation — objective functions, decision variables, constraint sets — required a different kind of thinking. Getting the Pizza Optimizer to actually work was deeply satisfying.</p>
+      </div>
+      <div class="refl-item">
+        <div class="refl-label">Most Valuable</div>
+        <h4>Comparative Advantage</h4>
+        <p>The Ricardian model answered a question that seemed obvious but wasn't: why would a superpower ever trade with a less productive country? The math proves it's always worth it.</p>
+      </div>
+      <div class="refl-item">
+        <div class="refl-label">Skills Developed</div>
+        <h4>Models & Critical Thinking</h4>
+        <p>Mathematical modeling, reading economic data critically, scenario analysis, and the ability to spot when a government's stated reason for a policy doesn't quite match its actual effect.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-name">Diana Abysheva — ID 2417678</div>
+  <div class="footer-note">International Trade · Management Science · 2024–2025</div>
+</footer>
+
+</body>
+</html>

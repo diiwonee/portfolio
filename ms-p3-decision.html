@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MS P3: Decision Trees — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#0d47a1;--blue-mid:#1565c0;--blue-light:#bbdefb;--blue-pale:#e3f2fd;--cream:#f8faff;--mist:#e8f0fe;--text-muted:#2c4a7a;--ink:#06152e}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(248,250,255,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(13,71,161,0.12)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--blue);text-decoration:none}
+.nav-back{font-size:0.74rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.hero{min-height:52vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(160deg,#020a1a 0%,#061530 40%,#0d2a60 75%,#1565c0 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:300;color:rgba(187,222,251,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(187,222,251,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#e3f2fd;line-height:1.1;margin-bottom:0.75rem}
+.hero h1 em{font-style:italic;color:#90caf9}
+.hero-sub{font-size:0.88rem;color:rgba(187,222,251,0.5);line-height:1.65}
+main{max-width:1000px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(13,71,161,0.1)}
+.sec-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--blue-light)}
+.sec-head h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--blue)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* SCENARIO CARD */
+.scenario-card{background:#fff;border:2px solid var(--blue);border-radius:14px;padding:1.8rem;margin:1.5rem 0}
+.sc-lbl{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:0.5rem}
+.scenario-card h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--ink);margin-bottom:0.75rem}
+.scenario-card p{margin:0;font-size:0.85rem;color:var(--text-muted)}
+
+/* TREE DISPLAY */
+.tree-container{background:#fff;border:0.5px solid rgba(13,71,161,0.12);border-radius:16px;padding:2rem;margin:1.5rem 0;overflow-x:auto}
+.tree-title{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1.5rem}
+.tree-svg-wrap{min-width:720px}
+
+/* PATH EXPLORER */
+.explorer{background:#fff;border:0.5px solid rgba(13,71,161,0.12);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.explorer h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--blue);margin-bottom:0.4rem}
+.exp-desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem}
+.level-section{margin-bottom:1.5rem}
+.level-label{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:0.6rem;font-weight:500}
+.choice-row{display:flex;gap:0.6rem;flex-wrap:wrap}
+.choice-btn{font-size:0.78rem;padding:0.5rem 1rem;border-radius:8px;border:0.5px solid rgba(13,71,161,0.2);background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;text-align:left;line-height:1.4}
+.choice-btn:hover{background:var(--mist);border-color:var(--blue-mid)}
+.choice-btn.selected{background:var(--blue);color:#fff;border-color:var(--blue)}
+.choice-btn.positive{border-left:3px solid #1b5e20}
+.choice-btn.negative{border-left:3px solid #b71c1c}
+.choice-btn.neutral{border-left:3px solid #e65100}
+.outcome-display{background:var(--blue-pale);border-radius:10px;padding:1.2rem;margin-top:1rem}
+.outcome-display .outcome-lbl{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:0.4rem}
+.outcome-display .outcome-text{font-size:0.88rem;color:var(--ink);line-height:1.6}
+.outcome-display .outcome-impact{margin-top:0.5rem;font-size:0.82rem;color:var(--text-muted)}
+
+/* RULES BOX */
+.rules-box{background:var(--mist);border-radius:12px;padding:1.5rem;margin:1.5rem 0}
+.rules-box .lbl{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:0.8rem}
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.rule{font-size:0.82rem;color:var(--ink);display:flex;gap:0.5rem;align-items:flex-start}
+.rule-num{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--blue);flex-shrink:0;font-weight:400}
+
+.learn-box{border:0.5px solid rgba(13,71,161,0.1);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:120px 1fr;border-bottom:0.5px solid rgba(13,71,161,0.07)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(13,71,161,0.04);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--blue-mid);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(13,71,161,0.1)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--blue)}
+@media(max-width:620px){.rules-grid{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand">← Management Science</a>
+  <a href="index.html" class="nav-back">Home</a>
+</nav>
+<section class="hero">
+  <div class="hero-num">03</div>
+  <div class="hero-content">
+    <div class="eyebrow">Management Science · Project 03</div>
+    <h1>Decision Trees —<br><em>The Viral Launch</em></h1>
+    <p class="hero-sub">A wearable tech product suddenly goes viral. Explore 5 levels of branching consequences — and see how one decision reshapes everything downstream.</p>
+  </div>
+</section>
+<main>
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Project Overview</h2></div>
+    <p>This project used the <strong>Decision Tree Scenario Activity</strong> from class. Groups of three built a tree based on one of three scenarios, reaching a minimum depth of Level 5, with at least two branches at every non-terminal node.</p>
+    <p>I chose Scenario 3: The Viral Product Launch. A wearable technology device suddenly goes globally viral after a celebrity mention. The company must decide: expand rapidly, hold steady, or pivot strategy?</p>
+
+    <div class="scenario-card">
+      <div class="sc-lbl">Scenario 3 — Selected</div>
+      <h3>The Viral Product Launch</h3>
+      <p>Your company develops a wearable technology device that suddenly becomes globally popular after a celebrity mentions it online. Orders explode overnight. Investors demand rapid expansion, customers expect immediate shipping, and competitors are already reacting. Expanding too quickly could damage product quality, but moving too slowly could allow competitors to take the market.</p>
+    </div>
+
+    <div class="rules-box">
+      <div class="lbl">Construction Rules</div>
+      <div class="rules-grid">
+        <div class="rule"><span class="rule-num">1</span><span>Root = Level 0. Minimum depth: Level 5</span></div>
+        <div class="rule"><span class="rule-num">2</span><span>At least one path must reach Level 5</span></div>
+        <div class="rule"><span class="rule-num">3</span><span>Every non-terminal node → at least 2 branches</span></div>
+        <div class="rule"><span class="rule-num">4</span><span>Include both positive and negative outcomes</span></div>
+        <div class="rule"><span class="rule-num">5</span><span>Consequences must be realistic and logically connected</span></div>
+        <div class="rule"><span class="rule-num">6</span><span>Labels, arrows, and short descriptions required</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Interactive Decision Tree</h2></div>
+    <p>Explore the decision tree interactively. At each level, choose a path — and see how consequences unfold. The tree reaches Level 5 along the main branches.</p>
+
+    <div class="tree-container">
+      <div class="tree-title">Decision tree — The Viral Product Launch (click nodes to explore)</div>
+      <div class="tree-svg-wrap">
+        <svg viewBox="0 0 860 520" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Sans',sans-serif">
+          <!-- Level lines -->
+          <text x="16" y="58" font-size="9" fill="#90a4c0" letter-spacing="1">L0</text>
+          <text x="16" y="148" font-size="9" fill="#90a4c0" letter-spacing="1">L1</text>
+          <text x="16" y="238" font-size="9" fill="#90a4c0" letter-spacing="1">L2</text>
+          <text x="16" y="328" font-size="9" fill="#90a4c0" letter-spacing="1">L3</text>
+          <text x="16" y="418" font-size="9" fill="#90a4c0" letter-spacing="1">L4</text>
+          <text x="16" y="508" font-size="9" fill="#90a4c0" letter-spacing="1">L5</text>
+
+          <!-- Connectors L0→L1 -->
+          <line x1="430" y1="70" x2="220" y2="130" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="430" y1="70" x2="640" y2="130" stroke="#b0c4de" stroke-width="0.8"/>
+
+          <!-- Connectors L1→L2 -->
+          <line x1="220" y1="160" x2="130" y2="220" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="220" y1="160" x2="310" y2="220" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="640" y1="160" x2="550" y2="220" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="640" y1="160" x2="730" y2="220" stroke="#b0c4de" stroke-width="0.8"/>
+
+          <!-- Connectors L2→L3 -->
+          <line x1="130" y1="250" x2="85" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="130" y1="250" x2="175" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="310" y1="250" x2="265" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="310" y1="250" x2="355" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="550" y1="250" x2="505" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="550" y1="250" x2="595" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="730" y1="250" x2="685" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+          <line x1="730" y1="250" x2="775" y2="310" stroke="#b0c4de" stroke-width="0.8"/>
+
+          <!-- Connectors L3→L4 (selected branch — rapid expand → quality drops → recall → restructure) -->
+          <line x1="85" y1="340" x2="60" y2="400" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="85" y1="340" x2="110" y2="400" stroke="#b0c4de" stroke-width="0.8"/>
+
+          <!-- Connectors L4→L5 -->
+          <line x1="60" y1="430" x2="45" y2="490" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <line x1="60" y1="430" x2="75" y2="490" stroke="#b0c4de" stroke-width="0.8"/>
+
+          <!-- L0 root -->
+          <rect x="340" y="28" width="180" height="42" rx="8" fill="#0d47a1" opacity="0.9"/>
+          <text x="430" y="47" text-anchor="middle" font-size="10" fill="#e3f2fd" font-weight="500">Viral Product Launch</text>
+          <text x="430" y="60" text-anchor="middle" font-size="9" fill="#90caf9">What does the company do?</text>
+
+          <!-- L1 -->
+          <rect x="140" y="128" width="160" height="34" rx="6" fill="#1565c0" opacity="0.85"/>
+          <text x="220" y="145" text-anchor="middle" font-size="9.5" fill="#e3f2fd" font-weight="500">A: Expand rapidly</text>
+          <text x="220" y="157" text-anchor="middle" font-size="8.5" fill="#90caf9">Hire, scale, ship fast</text>
+
+          <rect x="560" y="128" width="160" height="34" rx="6" fill="#1565c0" opacity="0.85"/>
+          <text x="640" y="145" text-anchor="middle" font-size="9.5" fill="#e3f2fd" font-weight="500">B: Hold &amp; consolidate</text>
+          <text x="640" y="157" text-anchor="middle" font-size="8.5" fill="#90caf9">Protect quality first</text>
+
+          <!-- L2 -->
+          <rect x="58" y="218" width="144" height="34" rx="6" fill="#1976d2" opacity="0.8"/>
+          <text x="130" y="234" text-anchor="middle" font-size="9" fill="#e3f2fd">Quality issues emerge</text>
+          <text x="130" y="246" text-anchor="middle" font-size="8" fill="#90caf9">Returns spike 40%</text>
+
+          <rect x="238" y="218" width="144" height="34" rx="6" fill="#2196f3" opacity="0.6"/>
+          <text x="310" y="234" text-anchor="middle" font-size="9" fill="#e3f2fd">Expansion successful</text>
+          <text x="310" y="246" text-anchor="middle" font-size="8" fill="#bbdefb">Market captured</text>
+
+          <rect x="478" y="218" width="144" height="34" rx="6" fill="#2196f3" opacity="0.6"/>
+          <text x="550" y="234" text-anchor="middle" font-size="9" fill="#e3f2fd">Competitors move fast</text>
+          <text x="550" y="246" text-anchor="middle" font-size="8" fill="#bbdefb">Market share erodes</text>
+
+          <rect x="658" y="218" width="144" height="34" rx="6" fill="#1976d2" opacity="0.8"/>
+          <text x="730" y="234" text-anchor="middle" font-size="9" fill="#e3f2fd">Premium positioning</text>
+          <text x="730" y="246" text-anchor="middle" font-size="8" fill="#90caf9">Scarcity builds brand</text>
+
+          <!-- L3 -->
+          <rect x="40" y="308" width="90" height="34" rx="5" fill="#b71c1c" opacity="0.75"/>
+          <text x="85" y="324" text-anchor="middle" font-size="8.5" fill="#ffcdd2">Product recall</text>
+          <text x="85" y="336" text-anchor="middle" font-size="8" fill="#ffcdd2">PR crisis</text>
+
+          <rect x="140" y="308" width="70" height="34" rx="5" fill="#1565c0" opacity="0.6"/>
+          <text x="175" y="324" text-anchor="middle" font-size="8" fill="#e3f2fd">Fix QC fast,</text>
+          <text x="175" y="336" text-anchor="middle" font-size="8" fill="#e3f2fd">survive</text>
+
+          <rect x="220" y="308" width="90" height="34" rx="5" fill="#1b5e20" opacity="0.7"/>
+          <text x="265" y="325" text-anchor="middle" font-size="8.5" fill="#c8e6c9">Dominate market</text>
+          <text x="265" y="337" text-anchor="middle" font-size="8" fill="#a5d6a7">→ IPO potential</text>
+
+          <rect x="320" y="308" width="70" height="34" rx="5" fill="#e65100" opacity="0.65"/>
+          <text x="355" y="325" text-anchor="middle" font-size="8" fill="#ffe0b2">Plateau: price</text>
+          <text x="355" y="337" text-anchor="middle" font-size="8" fill="#ffe0b2">war begins</text>
+
+          <rect x="460" y="308" width="90" height="34" rx="5" fill="#b71c1c" opacity="0.7"/>
+          <text x="505" y="325" text-anchor="middle" font-size="8.5" fill="#ffcdd2">Lose 30% market</text>
+          <text x="505" y="337" text-anchor="middle" font-size="8" fill="#ffcdd2">in 6 months</text>
+
+          <rect x="560" y="308" width="70" height="34" rx="5" fill="#1565c0" opacity="0.6"/>
+          <text x="595" y="325" text-anchor="middle" font-size="8" fill="#e3f2fd">Partner with</text>
+          <text x="595" y="337" text-anchor="middle" font-size="8" fill="#e3f2fd">distributor</text>
+
+          <rect x="640" y="308" width="90" height="34" rx="5" fill="#1b5e20" opacity="0.7"/>
+          <text x="685" y="325" text-anchor="middle" font-size="8.5" fill="#c8e6c9">Luxury brand</text>
+          <text x="685" y="337" text-anchor="middle" font-size="8" fill="#a5d6a7">status achieved</text>
+
+          <rect x="740" y="308" width="70" height="34" rx="5" fill="#e65100" opacity="0.65"/>
+          <text x="775" y="325" text-anchor="middle" font-size="8" fill="#ffe0b2">Demand fades,</text>
+          <text x="775" y="337" text-anchor="middle" font-size="8" fill="#ffe0b2">pivot needed</text>
+
+          <!-- L4 (recall branch) -->
+          <rect x="26" y="398" width="68" height="34" rx="5" fill="#7b1fa2" opacity="0.75"/>
+          <text x="60" y="414" text-anchor="middle" font-size="8" fill="#f3e5f5">Restructure</text>
+          <text x="60" y="426" text-anchor="middle" font-size="8" fill="#f3e5f5">operations</text>
+
+          <rect x="100" y="398" width="25" height="34" rx="4" fill="#555" opacity="0.4"/>
+          <text x="112" y="419" text-anchor="middle" font-size="7" fill="#eee">...</text>
+
+          <!-- L5 -->
+          <rect x="20" y="488" width="50" height="28" rx="4" fill="#1b5e20" opacity="0.8"/>
+          <text x="45" y="502" text-anchor="middle" font-size="7.5" fill="#c8e6c9">Recover &amp;</text>
+          <text x="45" y="512" text-anchor="middle" font-size="7.5" fill="#c8e6c9">relaunch ✓</text>
+
+          <rect x="72" y="488" width="50" height="28" rx="4" fill="#b71c1c" opacity="0.75"/>
+          <text x="97" y="502" text-anchor="middle" font-size="7.5" fill="#ffcdd2">Brand too</text>
+          <text x="97" y="512" text-anchor="middle" font-size="7.5" fill="#ffcdd2">damaged ✗</text>
+
+          <!-- Legend -->
+          <rect x="680" y="468" width="10" height="10" rx="2" fill="#1b5e20"/>
+          <text x="695" y="478" font-size="8.5" fill="#3a5a3a">Positive outcome</text>
+          <rect x="680" y="484" width="10" height="10" rx="2" fill="#b71c1c"/>
+          <text x="695" y="494" font-size="8.5" fill="#3a5a3a">Negative outcome</text>
+          <rect x="680" y="500" width="10" height="10" rx="2" fill="#e65100"/>
+          <text x="695" y="510" font-size="8.5" fill="#3a5a3a">Uncertain/risk</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="explorer">
+      <h3>Path Explorer</h3>
+      <p class="exp-desc">Make decisions level by level and see the consequences unfold. Each choice narrows the future.</p>
+      <div id="explorerContent"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Evidence from Coursework</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Activity</div><div class="learn-val">Group activity (groups of 3). Each group chose one scenario, then each member built 4–6 levels of branches for their assigned decision branch. The group combined the three sub-trees into one complete decision tree.</div></div>
+      <div class="learn-row"><div class="learn-key">My branch</div><div class="learn-val">I developed the "Expand Rapidly" branch. My path traces: rapid expansion → quality issues → recall → restructure → either recover or collapse. Five levels, both positive and negative terminal nodes.</div></div>
+      <div class="learn-row"><div class="learn-key">Key insight</div><div class="learn-val">A single early choice (expand vs hold) creates fundamentally different outcome spaces. By Level 5, the two paths have almost no overlap. This is why decision trees are valuable: they make explicit how much early choices constrain later options.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head"><span class="sec-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">Decision tree structure: nodes, branches, levels, terminal nodes. How probability and consequence combine in expected value calculations. The difference between risk (known probabilities) and uncertainty (unknown probabilities).</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Systematic consequence mapping. Thinking five steps ahead from a single decision. Identifying which branches are realistic vs which are wishful thinking.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">The hardest part was making the branches realistic — not just "things go well" vs "things go badly," but specific, connected consequences. A recall doesn't just hurt sales — it destroys trust, triggers investor panic, and may force structural changes. Depth of thinking, not just branching, is the skill.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="ms-p2-pinocchio.html">← Project 02</a>
+    <a href="ms-p4-tsp.html">Project 04 →</a>
+  </div>
+</main>
+<script>
+const tree={
+  label:"Viral Product Launch",sub:"What does the company do?",
+  branches:[
+    {label:"A: Expand Rapidly",sub:"Hire, scale, ship fast",type:"neutral",
+      branches:[
+        {label:"Quality issues emerge",sub:"Returns spike 40%",type:"negative",
+          branches:[
+            {label:"Product Recall",sub:"PR crisis begins",type:"negative",
+              branches:[
+                {label:"Restructure operations",sub:"CEO replaced, costs cut",type:"neutral",
+                  branches:[
+                    {label:"Recover & relaunch",sub:"Brand rebuilt in 18 months",type:"positive"},
+                    {label:"Brand too damaged",sub:"Company acquired at low price",type:"negative"}
+                  ]},
+                {label:"Double down on PR",sub:"Blame suppliers publicly",type:"negative",
+                  branches:[
+                    {label:"PR campaign fails",sub:"Class action lawsuit filed",type:"negative"},
+                    {label:"Scapegoat accepted",sub:"Short-term damage only",type:"neutral"}
+                  ]}
+              ]},
+            {label:"Fix QC quietly",sub:"Improve without recall",type:"neutral",
+              branches:[
+                {label:"Problem contained",sub:"Survive with reputation intact",type:"positive"},
+                {label:"Issue resurfaces",sub:"Forced recall later, worse PR",type:"negative"}
+              ]}
+          ]},
+        {label:"Expansion successful",sub:"Market captured",type:"positive",
+          branches:[
+            {label:"Dominate market",sub:"IPO potential in 2 years",type:"positive",
+              branches:[
+                {label:"IPO succeeds",sub:"$500M valuation",type:"positive"},
+                {label:"Market saturation hits",sub:"Growth slows pre-IPO",type:"neutral"}
+              ]},
+            {label:"Price war begins",sub:"Competitors undercut",type:"negative",
+              branches:[
+                {label:"Win on loyalty",sub:"Brand premium holds",type:"positive"},
+                {label:"Margins collapse",sub:"Pivot to subscriptions",type:"neutral"}
+              ]}
+          ]}
+      ]},
+    {label:"B: Hold & Consolidate",sub:"Protect quality first",type:"neutral",
+      branches:[
+        {label:"Competitors move fast",sub:"Market share erodes",type:"negative",
+          branches:[
+            {label:"Lose 30% market in 6mo",sub:"Investors demand action",type:"negative",
+              branches:[
+                {label:"Emergency expansion",sub:"Too late, quality suffers",type:"negative"},
+                {label:"Accept smaller market",sub:"Niche premium strategy",type:"neutral"}
+              ]},
+            {label:"Partner with distributor",sub:"Accelerate without hiring",type:"positive",
+              branches:[
+                {label:"Partnership works",sub:"Market recovered",type:"positive"},
+                {label:"Partner takes leverage",sub:"Margin compressed",type:"negative"}
+              ]}
+          ]},
+        {label:"Premium positioning holds",sub:"Scarcity builds brand",type:"positive",
+          branches:[
+            {label:"Luxury brand status",sub:"Apple-like premium achieved",type:"positive",
+              branches:[
+                {label:"Second product line",sub:"Portfolio expansion",type:"positive"},
+                {label:"Copycat premium brands",sub:"Competing for same niche",type:"neutral"}
+              ]},
+            {label:"Demand fades",sub:"Trend moves on",type:"negative",
+              branches:[
+                {label:"Pivot to B2B",sub:"Healthcare/enterprise use",type:"neutral"},
+                {label:"Product discontinued",sub:"Exit at loss",type:"negative"}
+              ]}
+          ]}
+      ]}
+  ]
+};
+
+let path=[];
+function renderExplorer(){
+  const el=document.getElementById('explorerContent');
+  el.innerHTML='';
+  let node=tree;
+  for(let i=0;i<path.length;i++){
+    node=node.branches[path[i]];
+  }
+  if(!node.branches){
+    el.innerHTML=`<div class="outcome-display"><div class="outcome-lbl">Terminal outcome — Level ${path.length}</div><div class="outcome-text">${node.label}</div><div class="outcome-impact">${node.sub}</div></div><button onclick="path=[];renderExplorer()" style="margin-top:1rem;font-size:0.78rem;padding:0.5rem 1.2rem;border-radius:100px;border:0.5px solid rgba(13,71,161,0.25);background:transparent;color:#1565c0;cursor:pointer">↺ Start over</button>`;
+    return;
+  }
+  // Show path
+  if(path.length>0){
+    const pathNames=[];let n=tree;
+    for(let i=0;i<path.length;i++){n=n.branches[path[i]];pathNames.push(n.label);}
+    el.innerHTML+=`<div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem;padding:0.6rem 0.8rem;background:var(--mist);border-radius:6px">Path: Root → ${pathNames.join(' → ')}</div>`;
+  }
+  el.innerHTML+=`<div class="level-section"><div class="level-label">Level ${path.length} — Choose a branch</div><div class="choice-row" id="choiceRow"></div></div>`;
+  const row=document.getElementById('choiceRow');
+  node.branches.forEach((b,i)=>{
+    const btn=document.createElement('button');
+    btn.className=`choice-btn ${b.type||'neutral'}`;
+    btn.innerHTML=`<strong>${b.label}</strong><br><span style="font-size:0.72rem;opacity:0.75">${b.sub}</span>`;
+    btn.onclick=()=>{path.push(i);renderExplorer();};
+    row.appendChild(btn);
+  });
+  if(path.length>0){
+    const back=document.createElement('button');
+    back.className='choice-btn';back.textContent='← Back';
+    back.onclick=()=>{path.pop();renderExplorer();};
+    row.appendChild(back);
+  }
+}
+renderExplorer();
+</script>
+</body>
+</html>
