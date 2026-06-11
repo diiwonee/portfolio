@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 5: Street Food Optimisation — Diana Abysheva</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --amber:#b8952a;--amber-dark:#7a5e0a;--amber-mid:#d4a820;--amber-light:#f5e9c0;
+  --cream:#faf8f0;--mist:#f5f0e0;--text-muted:#6b5a30;--ink:#1a1505;
+  --success:#1b6e2e;--danger:#c0392b;--blue:#1a3a5c;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2.5rem;display:flex;justify-content:space-between;align-items:center;background:rgba(250,248,240,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid rgba(184,149,42,0.18)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:0.95rem;color:var(--amber-dark);text-decoration:none}
+.nav-back{font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none}
+.nav-back:hover{color:var(--amber-dark)}
+
+.hero{min-height:50vh;display:flex;align-items:flex-end;padding:8rem 3rem 3.5rem;background:linear-gradient(155deg,#0d0a02 0%,#1a1505 40%,#3d2d08 75%,#6b4a15 100%);position:relative;overflow:hidden}
+.hero-num{position:absolute;right:3rem;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:12rem;font-weight:300;color:rgba(245,233,192,0.04);line-height:1;user-select:none}
+.hero-content{position:relative;max-width:720px}
+.hero-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:rgba(245,233,192,0.45);margin-bottom:0.8rem}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:300;color:#f5e9c0;line-height:1.1;margin-bottom:1rem}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-meta{display:flex;gap:2rem;flex-wrap:wrap}
+.meta-item{font-size:0.78rem;color:rgba(245,233,192,0.5)}
+.meta-item strong{color:rgba(245,233,192,0.85);display:block;margin-bottom:0.15rem;font-weight:500}
+
+main{max-width:900px;margin:0 auto;padding:4rem 2rem 6rem}
+.section{margin-bottom:4rem}
+.section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:0.5px solid rgba(184,149,42,0.18)}
+.section-num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--amber-light)}
+.section h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;color:var(--amber-dark)}
+p{font-size:0.88rem;line-height:1.8;color:var(--text-muted);margin-bottom:1rem}
+strong{color:var(--ink);font-weight:500}
+
+/* PROBLEM CARDS */
+.problem-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.problem-card{background:#fff;border:0.5px solid rgba(184,149,42,0.15);border-radius:12px;padding:1.4rem;position:relative;overflow:hidden}
+.problem-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.problem-card.taco::before{background:linear-gradient(90deg,#c0392b,#e74c3c)}
+.problem-card.burrito::before{background:linear-gradient(90deg,#b8952a,#e0c060)}
+.problem-card .card-label{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem}
+.problem-card h4{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--ink);margin-bottom:0.75rem}
+.problem-card .stat-row{display:flex;flex-direction:column;gap:0.35rem}
+.problem-card .stat{font-size:0.82rem;color:var(--text-muted);display:flex;justify-content:space-between}
+.problem-card .stat span{color:var(--ink);font-weight:500}
+
+/* LP NOTATION */
+.lp-box{background:#fff;border:0.5px solid rgba(184,149,42,0.15);border-radius:14px;padding:1.8rem 2rem;margin:1.5rem 0}
+.lp-box .lp-label{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--amber-dark);margin-bottom:0.4rem;font-family:'DM Sans',sans-serif}
+.lp-formula{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ink);margin-bottom:0.6rem;line-height:1.6}
+.lp-formula .v{color:var(--amber-dark);font-weight:600}
+.lp-divider{border:none;border-top:0.5px solid rgba(184,149,42,0.12);margin:0.8rem 0}
+
+/* TABS */
+.tabs{display:flex;gap:0.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.tab-btn{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.6rem 1.2rem;border-radius:100px;border:0.5px solid rgba(184,149,42,0.25);background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+.tab-btn.active{background:var(--amber-dark);color:#fff;border-color:var(--amber-dark)}
+.panel{display:none}.panel.active{display:block}
+
+/* GRAPH */
+.chart-box{background:#fff;border:0.5px solid rgba(184,149,42,0.12);border-radius:14px;padding:1.5rem;margin:1.5rem 0}
+.chart-title{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:1rem}
+.chart-wrap{position:relative;height:360px}
+
+/* CORNER POINTS TABLE */
+.corner-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.83rem}
+.corner-table th{text-align:left;padding:0.7rem 1rem;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);border-bottom:0.5px solid rgba(184,149,42,0.15);font-weight:400}
+.corner-table td{padding:0.7rem 1rem;border-bottom:0.5px solid rgba(184,149,42,0.07);color:var(--ink)}
+.corner-table tr.optimal td{background:rgba(184,149,42,0.08);font-weight:500;color:var(--amber-dark)}
+.corner-table .tag{display:inline-block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;background:rgba(27,110,46,0.1);color:var(--success);border-radius:100px;padding:0.2rem 0.6rem;margin-left:0.5rem}
+
+/* SOLVER */
+.solver-box{background:#fff;border:0.5px solid rgba(184,149,42,0.12);border-radius:14px;padding:2rem;margin:1.5rem 0}
+.solver-box h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--amber-dark);margin-bottom:0.4rem}
+.solver-desc{font-size:0.82rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+.slider-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.slider-group label{font-size:0.73rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:0.45rem}
+.slider-group input[type=range]{width:100%;accent-color:var(--amber-dark);margin-bottom:0.3rem}
+.slider-val{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--amber-dark);font-weight:300}
+.result-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;border-top:0.5px solid rgba(184,149,42,0.1);padding-top:1.25rem}
+.result-item{text-align:center;background:var(--mist);border-radius:8px;padding:0.75rem}
+.result-item .val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--amber-dark)}
+.result-item.good .val{color:var(--success)}
+.result-item.bad .val{color:var(--danger)}
+.result-item .lbl{font-size:0.63rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-top:0.2rem}
+.verdict{margin-top:1rem;padding:0.9rem 1.1rem;border-radius:8px;font-size:0.83rem;line-height:1.65;background:rgba(184,149,42,0.07);color:var(--ink)}
+
+/* HIGHLIGHT BOX */
+.highlight{background:linear-gradient(135deg,#0d0a02,#1a1505);border-radius:14px;padding:2rem;margin:2rem 0;color:#f5e9c0}
+.highlight .label{font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:rgba(245,233,192,0.45);margin-bottom:0.75rem}
+.highlight h3{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:300;margin-bottom:0.75rem;line-height:1.25}
+.highlight p{color:rgba(245,233,192,0.65);font-size:0.85rem;margin:0;line-height:1.7}
+
+/* GAME LINK */
+.game-card{background:#fff;border:2px solid var(--amber);border-radius:14px;padding:1.8rem;margin:1.5rem 0;display:flex;align-items:center;gap:1.5rem;text-decoration:none;transition:all 0.25s}
+.game-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(184,149,42,0.15)}
+.game-icon{font-size:2.8rem;flex-shrink:0}
+.game-body h4{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--amber-dark);margin-bottom:0.3rem}
+.game-body p{font-size:0.82rem;color:var(--text-muted);margin:0;line-height:1.55}
+.game-arrow{margin-left:auto;font-size:1.3rem;color:var(--amber);flex-shrink:0;transition:transform 0.2s}
+.game-card:hover .game-arrow{transform:translateX(4px)}
+
+/* LEARN BOX */
+.learn-box{border:0.5px solid rgba(184,149,42,0.15);border-radius:14px;overflow:hidden;margin-top:1.5rem}
+.learn-row{display:grid;grid-template-columns:130px 1fr;border-bottom:0.5px solid rgba(184,149,42,0.09)}
+.learn-row:last-child{border-bottom:none}
+.learn-key{padding:1rem 1.2rem;background:rgba(184,149,42,0.05);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--amber-dark);display:flex;align-items:center;font-weight:500}
+.learn-val{padding:1rem 1.5rem;font-size:0.83rem;color:var(--text-muted);line-height:1.65}
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;margin-top:5rem;padding-top:2rem;border-top:0.5px solid rgba(184,149,42,0.12)}
+.page-nav a{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.page-nav a:hover{color:var(--amber-dark)}
+
+@media(max-width:620px){.problem-row,.slider-row,.result-row{grid-template-columns:1fr}.hero{padding:7rem 1.5rem 3rem}main{padding:3rem 1.5rem 5rem}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index2.html" class="nav-brand">← Management Science</a>
+  <a href="index.html" class="nav-back">Home</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-num">05</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Management Science · Project 05</div>
+    <h1>Street Food<br><em>Optimisation</em></h1>
+    <div class="hero-meta">
+      <div class="meta-item"><strong>Activity</strong>Test Your Ability — LP Problem</div>
+      <div class="meta-item"><strong>Method</strong>Linear Programming + Graphical Solution</div>
+      <div class="meta-item"><strong>Goal</strong>Maximise weekly customers</div>
+    </div>
+  </div>
+</section>
+
+<main>
+
+  <!-- SECTION 1: OVERVIEW -->
+  <section class="section">
+    <div class="section-head"><span class="section-num">01</span><h2>Project Overview</h2></div>
+    <p>This project solves a <strong>linear programming problem</strong> from class: a street food company wants to invest a budget of <strong>360,000</strong> in two types of food trucks — taco trucks and burrito trucks — to <strong>maximise the total number of weekly customers</strong>.</p>
+    <p>The challenge: each truck type has a different cost, a maximum availability limit, and a different customer draw per week. We need to find the exact combination that gets the most customers without exceeding the budget or availability caps.</p>
+
+    <div class="problem-row">
+      <div class="problem-card taco">
+        <div class="card-label">Decision Variable x₁</div>
+        <h4>🌮 Taco Trucks</h4>
+        <div class="stat-row">
+          <div class="stat">Cost per truck <span>30,000</span></div>
+          <div class="stat">Max available <span>8 trucks</span></div>
+          <div class="stat">Customers/week <span>2,000</span></div>
+        </div>
+      </div>
+      <div class="problem-card burrito">
+        <div class="card-label">Decision Variable x₂</div>
+        <h4>🌯 Burrito Trucks</h4>
+        <div class="stat-row">
+          <div class="stat">Cost per truck <span>40,000</span></div>
+          <div class="stat">Max available <span>6 trucks</span></div>
+          <div class="stat">Customers/week <span>5,000</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lp-box">
+      <div class="lp-label">LP Formulation</div>
+      <div class="lp-formula">Maximise <span class="v">Z</span> = 2,000x₁ + 5,000x₂ &nbsp;&nbsp;<em style="font-size:0.85rem;color:var(--text-muted)">(total weekly customers)</em></div>
+      <div class="lp-divider"></div>
+      <div class="lp-label">Subject to</div>
+      <div class="lp-formula">Budget: &nbsp;&nbsp;<span class="v">30,000x₁ + 40,000x₂ ≤ 360,000</span> &nbsp;&nbsp;→ simplified: <span class="v">3x₁ + 4x₂ ≤ 36</span></div>
+      <div class="lp-formula">Taco availability: &nbsp;&nbsp;<span class="v">x₁ ≤ 8</span></div>
+      <div class="lp-formula">Burrito availability: &nbsp;&nbsp;<span class="v">x₂ ≤ 6</span></div>
+      <div class="lp-formula">Non-negativity: &nbsp;&nbsp;<span class="v">x₁, x₂ ≥ 0</span></div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: INTERACTIVE DEMO -->
+  <section class="section">
+    <div class="section-head"><span class="section-num">02</span><h2>Interactive Demonstration</h2></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showPanel('graph')">📈 Feasible Region Graph</button>
+      <button class="tab-btn" onclick="showPanel('corners')">📍 Corner Point Analysis</button>
+      <button class="tab-btn" onclick="showPanel('solver')">🧮 Custom Solver</button>
+      <button class="tab-btn" onclick="showPanel('game')">🎮 Burrito Game</button>
+    </div>
+
+    <!-- GRAPH PANEL -->
+    <div class="panel active" id="panel-graph">
+      <div class="chart-box">
+        <div class="chart-title">Feasible region — x₁ (taco trucks) vs x₂ (burrito trucks). Shaded area = all valid solutions. ★ = optimal point.</div>
+        <div class="chart-wrap"><canvas id="feasibleChart"></canvas></div>
+      </div>
+      <div class="highlight">
+        <div class="label">Reading the Graph</div>
+        <h3>Every point inside the shaded region is a valid solution</h3>
+        <p>The three constraint lines form the boundary of the feasible region. The budget line (3x₁ + 4x₂ = 36) is the tightest constraint — it cuts diagonally. The optimal solution is always at one of the corner points where constraint lines intersect. The star ★ marks the optimal: <strong style="color:var(--amber)">x₁ = 4, x₂ = 6</strong>.</p>
+      </div>
+    </div>
+
+    <!-- CORNER POINTS PANEL -->
+    <div class="panel" id="panel-corners">
+      <p>The optimal solution to any LP problem always lies at a <strong>corner point</strong> (vertex) of the feasible region. We evaluate the objective function Z = 2,000x₁ + 5,000x₂ at each corner and pick the highest.</p>
+      <table class="corner-table" id="cornerTable">
+        <thead>
+          <tr>
+            <th>Corner Point</th>
+            <th>x₁ (Taco trucks)</th>
+            <th>x₂ (Burrito trucks)</th>
+            <th>Budget used</th>
+            <th>Z = Weekly customers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Origin</td><td>0</td><td>0</td><td>0</td><td>0</td>
+          </tr>
+          <tr>
+            <td>Budget meets x-axis</td><td>8</td><td>0</td><td>240,000</td><td>16,000</td>
+          </tr>
+          <tr>
+            <td>x₁ = 8, budget binding</td><td>8</td><td>3</td><td>360,000</td><td>31,000</td>
+          </tr>
+          <tr class="optimal">
+            <td>Budget meets x₂ = 6 <span class="tag">★ Optimal</span></td><td>4</td><td>6</td><td>360,000</td><td>46,000</td>
+          </tr>
+          <tr>
+            <td>x₂ = 6 meets x-axis</td><td>0</td><td>6</td><td>240,000</td><td>30,000</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="highlight">
+        <div class="label">Optimal Solution</div>
+        <h3>Buy 4 taco trucks + 6 burrito trucks = 46,000 customers/week</h3>
+        <p>Total cost: 4 × 30,000 + 6 × 40,000 = 120,000 + 240,000 = <strong style="color:var(--amber)">360,000</strong> — exactly at budget. The burrito truck availability constraint (x₂ ≤ 6) is binding. We use all 6 available burrito trucks because they attract 2.5× more customers per truck than taco trucks.</p>
+      </div>
+      <p style="margin-top:1rem"><strong>Slope of the objective function:</strong> Rearranging Z = 2,000x₁ + 5,000x₂ for x₂ gives: x₂ = Z/5,000 − (2/5)x₁. The slope is <strong>−2/5 = −0.4</strong>. Since this is less steep than the budget constraint slope (−3/4 = −0.75), the OF "slides" toward the x₂ = 6 corner before hitting the budget line — confirming the optimal is at (4, 6).</p>
+    </div>
+
+    <!-- SOLVER PANEL -->
+    <div class="panel" id="panel-solver">
+      <div class="solver-box">
+        <h3>Custom LP Solver</h3>
+        <p class="solver-desc">Change the budget, truck costs, customer numbers, or availability limits. The solver recalculates the feasible region and finds the new optimal instantly.</p>
+        <div class="slider-row">
+          <div class="slider-group">
+            <label>Total budget (×1,000)</label>
+            <input type="range" id="sBudget" min="100" max="600" value="360" step="10" oninput="runSolver()">
+            <div class="slider-val" id="vBudget">360,000</div>
+          </div>
+          <div class="slider-group">
+            <label>Taco truck cost (×1,000)</label>
+            <input type="range" id="sCostX1" min="10" max="80" value="30" step="5" oninput="runSolver()">
+            <div class="slider-val" id="vCostX1">30,000</div>
+          </div>
+          <div class="slider-group">
+            <label>Burrito truck cost (×1,000)</label>
+            <input type="range" id="sCostX2" min="10" max="100" value="40" step="5" oninput="runSolver()">
+            <div class="slider-val" id="vCostX2">40,000</div>
+          </div>
+          <div class="slider-group">
+            <label>Taco customers / week</label>
+            <input type="range" id="sCustX1" min="500" max="8000" value="2000" step="500" oninput="runSolver()">
+            <div class="slider-val" id="vCustX1">2,000</div>
+          </div>
+          <div class="slider-group">
+            <label>Burrito customers / week</label>
+            <input type="range" id="sCustX2" min="500" max="12000" value="5000" step="500" oninput="runSolver()">
+            <div class="slider-val" id="vCustX2">5,000</div>
+          </div>
+          <div class="slider-group">
+            <label>Max taco trucks available</label>
+            <input type="range" id="sMaxX1" min="1" max="15" value="8" oninput="runSolver()">
+            <div class="slider-val" id="vMaxX1">8</div>
+          </div>
+        </div>
+        <div class="result-row">
+          <div class="result-item good"><div class="val" id="rX1">4</div><div class="lbl">Taco trucks (x₁)</div></div>
+          <div class="result-item good"><div class="val" id="rX2">6</div><div class="lbl">Burrito trucks (x₂)</div></div>
+          <div class="result-item"><div class="val" id="rZ">46k</div><div class="lbl">Weekly customers</div></div>
+          <div class="result-item"><div class="val" id="rCost">360k</div><div class="lbl">Budget used</div></div>
+        </div>
+        <div class="verdict" id="solverVerdict"></div>
+      </div>
+    </div>
+
+    <!-- GAME PANEL -->
+    <div class="panel" id="panel-game">
+      <p>After solving the problem mathematically, the class activity also included playing the <strong>Burrito Optimization Game</strong> by Gurobi — an interactive way to experience LP constraints in a real decision-making scenario.</p>
+      <a href="https://www.gurobi.com/academics/burrito-game" target="_blank" class="game-card">
+        <div class="game-icon">🌯</div>
+        <div class="game-body">
+          <h4>The Burrito Optimization Game</h4>
+          <p>An interactive LP game by Gurobi. Make business decisions under real constraints and discover how optimization thinking applies to everyday choices. Opens in a new tab.</p>
+        </div>
+        <div class="game-arrow">→</div>
+      </a>
+      <div class="highlight" style="margin-top:1.5rem">
+        <div class="label">Why Play It?</div>
+        <h3>Math on paper vs. decisions under pressure</h3>
+        <p>Solving LP algebraically feels clean and certain. The game introduces time pressure, incomplete information, and tradeoffs that feel real. It shows that optimization is not just a calculation — it's a mindset for making better decisions faster.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: EVIDENCE -->
+  <section class="section">
+    <div class="section-head"><span class="section-num">03</span><h2>Evidence from Coursework</h2></div>
+    <p>This problem was given as a class activity titled "Test Your Ability" — a self-assessed LP problem to check understanding of graphical solution methods after the Pizza Optimizer and Pinocchio problems.</p>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Step 1</div><div class="learn-val">Identified the <strong>objective function</strong>: Z = 2,000x₁ + 5,000x₂. Goal is maximisation of weekly customers.</div></div>
+      <div class="learn-row"><div class="learn-key">Step 2</div><div class="learn-val">Identified all <strong>constraints</strong>: budget (30,000x₁ + 40,000x₂ ≤ 360,000), availability (x₁ ≤ 8, x₂ ≤ 6), and non-negativity.</div></div>
+      <div class="learn-row"><div class="learn-key">Step 3</div><div class="learn-val">Graphed the feasible region by plotting each constraint line and shading the valid area. Found <strong>4 corner points</strong> to evaluate.</div></div>
+      <div class="learn-row"><div class="learn-key">Step 4</div><div class="learn-val">Calculated Z at each corner. Maximum Z = <strong>46,000 customers/week</strong> at (x₁ = 4, x₂ = 6). Confirmed by slope analysis of the objective function.</div></div>
+      <div class="learn-row"><div class="learn-key">Step 5</div><div class="learn-val">Played the <strong>Burrito Optimization Game</strong> by Gurobi to experience LP decision-making interactively.</div></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: REFLECTION -->
+  <section class="section">
+    <div class="section-head"><span class="section-num">04</span><h2>What Did I Learn?</h2></div>
+    <div class="learn-box">
+      <div class="learn-row"><div class="learn-key">Knowledge</div><div class="learn-val">How to formulate a real LP problem from a word problem. Why the optimal solution is always at a corner point of the feasible region. How the slope of the objective function determines which corner is optimal.</div></div>
+      <div class="learn-row"><div class="learn-key">Skills</div><div class="learn-val">Translating business constraints into mathematical inequalities. Graphing feasible regions. Evaluating corner points systematically. Verifying algebraically with slope analysis.</div></div>
+      <div class="learn-row"><div class="learn-key">Reflection</div><div class="learn-val">What surprised me: even though taco trucks are cheaper, the optimal solution uses <em>fewer</em> of them. The burrito truck is 2.5× more valuable per customer attracted — so the model naturally prioritises maxing out burrito trucks first, then filling the remaining budget. Intuition says "buy cheap" — the model says "buy efficient." The model wins.</div></div>
+    </div>
+  </section>
+
+  <div class="page-nav">
+    <a href="ms-p4-tsp.html">← Project 04: TSP</a>
+    <a href="index2.html">Back to MS Course →</a>
+  </div>
+</main>
+
+<script>
+// ── TAB SWITCHING ──
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── FEASIBLE REGION CHART ──
+function buildFeasibleChart(){
+  const ctx=document.getElementById('feasibleChart').getContext('2d');
+
+  // Constraint lines (x1 axis 0..12)
+  const x1range=[...Array(13).keys()]; // 0..12
+
+  // Budget line: 3x1 + 4x2 = 36 → x2 = (36-3x1)/4
+  const budgetLine=x1range.map(x=>({x,y:Math.max(0,(36-3*x)/4)}));
+  // x1 = 8 vertical
+  // x2 = 6 horizontal
+
+  // Feasible region polygon corners: (0,0),(8,0),(8,3),(4,6),(0,6)
+  const feasibleRegion=[
+    {x:0,y:0},{x:8,y:0},{x:8,y:3},{x:4,y:6},{x:0,y:6},{x:0,y:0}
+  ];
+
+  // Objective function line through optimal (4,6): Z=46000 → 2x1+5x2=46 → x2=(46-2x1)/5
+  const ofLine=x1range.map(x=>({x,y:(46-2*x)/5}));
+
+  new Chart(ctx,{
+    type:'scatter',
+    data:{
+      datasets:[
+        // Feasible region fill
+        {label:'Feasible Region',data:feasibleRegion,
+         fill:true,backgroundColor:'rgba(184,149,42,0.12)',
+         borderColor:'rgba(184,149,42,0.0)',showLine:true,
+         pointRadius:0,tension:0,order:4},
+        // Budget constraint
+        {label:'Budget: 3x₁+4x₂=36',data:budgetLine,
+         showLine:true,borderColor:'#c0392b',borderWidth:2,
+         backgroundColor:'transparent',pointRadius:0,tension:0,order:3},
+        // x1 = 8
+        {label:'x₁ ≤ 8 (taco limit)',data:[{x:8,y:0},{x:8,y:9}],
+         showLine:true,borderColor:'#1a3a5c',borderWidth:2,borderDash:[6,3],
+         backgroundColor:'transparent',pointRadius:0,tension:0,order:3},
+        // x2 = 6
+        {label:'x₂ ≤ 6 (burrito limit)',data:[{x:0,y:6},{x:12,y:6}],
+         showLine:true,borderColor:'#2e5f8a',borderWidth:2,borderDash:[6,3],
+         backgroundColor:'transparent',pointRadius:0,tension:0,order:3},
+        // OF line
+        {label:'Objective function (Z=46,000)',data:ofLine,
+         showLine:true,borderColor:'#1b6e2e',borderWidth:1.5,borderDash:[4,4],
+         backgroundColor:'transparent',pointRadius:0,tension:0,order:2},
+        // Corner points
+        {label:'Corner points',
+         data:[{x:0,y:0},{x:8,y:0},{x:8,y:3},{x:0,y:6}],
+         showLine:false,pointRadius:6,pointBackgroundColor:'#b8952a',
+         pointBorderColor:'#fff',pointBorderWidth:1.5,order:1},
+        // Optimal point
+        {label:'★ Optimal (4, 6)',data:[{x:4,y:6}],
+         showLine:false,pointRadius:12,pointBackgroundColor:'#1b6e2e',
+         pointBorderColor:'#fff',pointBorderWidth:2,
+         pointStyle:'star',order:0},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom',labels:{font:{size:11},boxWidth:14,padding:16}},
+        tooltip:{callbacks:{
+          label:ctx=>`(x₁=${ctx.parsed.x}, x₂=${ctx.parsed.y.toFixed(1)})`
+        }}
+      },
+      scales:{
+        x:{min:0,max:12,title:{display:true,text:'x₁ — Taco trucks',font:{size:12}},
+           grid:{color:'rgba(184,149,42,0.08)'},ticks:{stepSize:1}},
+        y:{min:0,max:9,title:{display:true,text:'x₂ — Burrito trucks',font:{size:12}},
+           grid:{color:'rgba(184,149,42,0.08)'},ticks:{stepSize:1}}
+      }
+    }
+  });
+}
+buildFeasibleChart();
+
+// ── CUSTOM SOLVER ──
+function runSolver(){
+  const budget=+document.getElementById('sBudget').value;
+  const c1=+document.getElementById('sCostX1').value;
+  const c2=+document.getElementById('sCostX2').value;
+  const cu1=+document.getElementById('sCustX1').value;
+  const cu2=+document.getElementById('sCustX2').value;
+  const maxX1=+document.getElementById('sMaxX1').value;
+  const maxX2=6; // fixed per problem
+
+  document.getElementById('vBudget').textContent=budget.toLocaleString()+',000';
+  document.getElementById('vCostX1').textContent=c1.toLocaleString()+',000';
+  document.getElementById('vCostX2').textContent=c2.toLocaleString()+',000';
+  document.getElementById('vCustX1').textContent=cu1.toLocaleString();
+  document.getElementById('vCustX2').textContent=cu2.toLocaleString();
+  document.getElementById('vMaxX1').textContent=maxX1;
+
+  // Enumerate feasible integer solutions
+  let bestZ=-1,bestX1=0,bestX2=0;
+  for(let x1=0;x1<=maxX1;x1++){
+    for(let x2=0;x2<=maxX2;x2++){
+      const cost=(c1*x1+c2*x2)*1000;
+      if(cost>budget*1000) continue;
+      const z=cu1*x1+cu2*x2;
+      if(z>bestZ){bestZ=z;bestX1=x1;bestX2=x2;}
+    }
+  }
+
+  document.getElementById('rX1').textContent=bestX1;
+  document.getElementById('rX2').textContent=bestX2;
+  document.getElementById('rZ').textContent=bestZ>=1000?(bestZ/1000).toFixed(1)+'k':bestZ;
+  const usedBudget=(bestX1*c1+bestX2*c2);
+  document.getElementById('rCost').textContent=usedBudget+'k';
+
+  const v=document.getElementById('solverVerdict');
+  v.textContent=`Optimal: ${bestX1} taco truck${bestX1!==1?'s':''} + ${bestX2} burrito truck${bestX2!==1?'s':''} = ${bestZ.toLocaleString()} customers/week. Budget used: ${usedBudget.toLocaleString()},000 of ${budget.toLocaleString()},000. ${usedBudget===budget?'Budget fully used ✓':'Budget not fully used — availability constraints are binding.'}`;
+}
+runSolver();
+</script>
+</body>
+</html>
